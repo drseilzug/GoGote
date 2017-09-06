@@ -1,3 +1,6 @@
+# Old version
+
+
 class GoBrett:
     def __init__(self, size, name):
         """
@@ -13,39 +16,39 @@ class GoBrett:
             2:: weiss
         last_move:: zu gesetzter zug.
         """
-        self.size=size  
-        self.name=name  
-        self.position=[[0]*size for _ in range(size)] 
-        self.last_player=0
-    
+        self.size = size
+        self.name = name
+        self.position = [[0]*size for _ in range(size)]
+        self.last_player = 0
+
     @staticmethod
     def input_int(x):
         if isinstance(x, int):
             return(x)
         elif isinstance(x, str):
-            if x.isalpha(): 
-                x=x.lower()[0]
+            if x.isalpha():
+                x = x.lower()[0]
                 return(ord(x)-ord('a'))
         else:
             print("ungueltige eingabe")
-            return(-1)  
-        
+            return(-1)
+
     def get_status(self, a):
         """gibt aus was an position a (2-tupel) ist.
         -1 :: nicht auf dem feld
         """
-        if a[0]<0 or a[0]>=self.size or a[1]<0 or a[1]>=self.size:
+        if a[0] < 0 or a[0] >= self.size or a[1] < 0 or a[1] >= self.size:
             return -1
         else:
             return self.position[a[0]][a[1]]
-    
+
     def set_status(self, a, new_status):
         self.position[a[0]][a[1]]=new_status
-        
-    
-        
+
+
+
     def relation(self, a, b):
-        """Testet, ob a=(a_1,a_2) und b=(b_1,b_2) 
+        """Testet, ob a=(a_1,a_2) und b=(b_1,b_2)
         befreundet (2)
         gegeneinander (1)
         min einer unbesetzt (0)
@@ -59,14 +62,14 @@ class GoBrett:
             return 2
         else:
             return 1
-    
+
     def neighbors_of(self, a):
         """gibt menge der nachbarkoordinaten von a zurueck
         """
         neighbors={(a[0]+1,a[1]),(a[0]-1,a[1]),(a[0],a[1]+1),(a[0],a[1]-1)}
         return neighbors
-                
-    
+
+
     def get_group(self, a):
         """ Gibt die zur Gruppe von a gehoerigen Steine zurueck
         """
@@ -80,7 +83,7 @@ class GoBrett:
                     foo(neighbor)
         foo(a)
         return group
-    
+
     def count_libs(self, a):
         """Zaehlt die Freiheiten der zu a gehoerigen Gruppe
         """
@@ -91,15 +94,15 @@ class GoBrett:
                 if self.get_status(neighbour)==0:
                     libs.add(neighbour)
         return len(libs)
-    
+
     def remove_group(self, a):
         """entfehrnt die Gruppe von a vom Feld
         """
         group=self.get_group(a)
         for stone in group:
             self.set_status(stone, 0)
-    
-    
+
+
 
 #===============================================================================
 #     def no_libertys(self, a):
@@ -122,15 +125,15 @@ class GoBrett:
 #             return status_tmp
 #         return foo(a)
 #===============================================================================
-            
+
     def is_legal_position(self):
         legal=True
         for i in range(self.size):
             for j in range(self.size):
-                legal=legal and not (self.count_libs((i,j))==0 and self.get_status((i,j))>0)        
+                legal=legal and not (self.count_libs((i,j))==0 and self.get_status((i,j))>0)
         return legal
-        
-                
+
+
     def __str__(self):
         tmp=""
         for line in self.position:
@@ -141,18 +144,18 @@ class GoBrett:
                     tmp=tmp+"B"
                 else:
                     tmp=tmp+"W"
-            tmp=tmp+"\n"            
+            tmp=tmp+"\n"
         return(tmp)
-   
+
     #===========================================================================
     # def set_hc(self, hc):
     #     """
     #     Setzt HC Steine in position
     #     nur in 9x9; 19x19
-    #     """   
+    #     """
     #     if self.size==9:
     #         if hc=1:
-    #              
+    #
     #     elif self.size==19:
     #         #soon (TM)
     #     else:
