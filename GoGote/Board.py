@@ -4,7 +4,7 @@ class Board:
     Objects of this class represent the state of the go board at
     given move.
 
-    Here be more docstring
+    Here be more docstring TODO
     """
 
     # Aliases
@@ -133,12 +133,13 @@ class Board:
 
 
 # Testing area
-testspiel = Board(size=9)
+if __name__ == "__main__":
+    testspiel = Board(size=9)
 
-testspiel.set_field(2, 4, testspiel.black)
-testspiel.postion[1][4] = 1
-testspiel.postion[3][5] = 1
-testspiel.postion[3][4] = 1
-testspiel.postion[6][6] = 2
-testspiel.postion[7][6] = 2
-print(testspiel)
+    testspiel.set_field(2, 4, testspiel.black)
+    testspiel.postion[1][4] = 1
+    testspiel.postion[3][5] = 1
+    testspiel.postion[3][4] = 1
+    testspiel.postion[6][6] = 2
+    testspiel.postion[7][6] = 2
+    print(testspiel)
