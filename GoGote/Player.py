@@ -9,3 +9,16 @@ class Player:
     def __init__(self, name="Generic Name", rank="?"):
         self.rank = rank
         self.name = name
+
+    # TODO: Error handling for non sting inputs
+    def set_name(self, name):
+        """
+        Sets player name.
+        """
+        self.name = name
+
+    def set_rank(self, rank):
+        """
+        Sets player rank
+        """
+        self.rank = rank
