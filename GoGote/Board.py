@@ -41,7 +41,7 @@ class Board:
             repr += "\n"
         return repr
 
-    def get_neighbors(self, x, y):
+    def get_neighbours(self, x, y):
         """
         Returns a set with the coords of all neighbours of (x,y)
         as tupels
@@ -111,15 +111,38 @@ class Board:
         libs = False
         while len(to_check) > 0:
             current_stone = to_check.pop()
-            neighbours = self.neighbours(*current_stone) - checked
+            neighbours = self.get_neighbours(*current_stone) - checked
             for stone in neighbours:
                 if self.is_friend(*current_stone, *stone):
-                    to_check.update(stone)
+                    to_check.add(stone)
                 elif self.is_empty:
                     libs = True
                     break
-            checked.update(current_stone)
+            checked.add(current_stone)
         return {'libs': libs, 'group': checked}
+
+    def check_legal(self):  # work in progress
+        """
+        returns True of Boad is a legal go position
+        i.e. every stone belongs to a group with liberties
+        False otherwise
+        """
+        stones = set()
+        legal = True
+        # get all coordiantes
+        for x in range(self.size):
+            for y in range(self.size):
+                stones.add((x, y))
+        # check each stone
+        while len(stones) > 0:
+            stone = stones.pop()
+            (x, y) = stone
+            if self.postion[x][y] == self.black or self.white:
+                group_status = self.get_group_info(*stone)
+                print(group_status["libs"], "LALALALA")
+                legal = legal and group_status["libs"]
+                stones -= group_status["group"]
+        return legal
 
     def kill_stone(self, x, y):
         if self.postion[x][y] == self.black:
@@ -134,7 +157,7 @@ class Board:
 
 # Testing area
 if __name__ == "__main__":
-    testspiel = Board(size=9)
+    testspiel = Board(size=8)
 
     testspiel.set_field(2, 4, testspiel.black)
     testspiel.postion[1][4] = 1
@@ -143,3 +166,10 @@ if __name__ == "__main__":
     testspiel.postion[6][6] = 2
     testspiel.postion[7][6] = 2
     print(testspiel)
+
+    testspiel.check_legal()
+
+    spiel2 = Board(size=1)
+    spiel2.set_field(0, 0, 1)
+    print(spiel2)
+    spiel2.check_legal()
