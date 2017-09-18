@@ -154,6 +154,21 @@ class Board:
         else:
             print("cant kill nonexisting stone")  # TODO: ERROR handeling
 
+    def change_caps(self, n, color):
+        """
+        changes captured of color stones by integer n
+
+        color::
+            black: 1, "b", "black", self.black
+            white: 2, "w", "white", self.white
+        """
+        # TODO imput error handeling
+        if color in (self.black, "b", "black"):
+            self.caps_black += n
+        elif color in (self.white, "3", "white"):
+            self.caps_white += n
+        else:
+            print("unknow color signature")  # TODO ERROR HANDELING
 
 # Testing area
 if __name__ == "__main__":
