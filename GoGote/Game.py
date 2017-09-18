@@ -15,3 +15,8 @@ class Game:
     # def make_move(self, x, y):
     # def pass(self):
     # def check_ko(self):
+
+
+# Testing area
+if __name__ == "__main__":
+    pass

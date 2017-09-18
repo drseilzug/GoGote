@@ -22,3 +22,8 @@ class Player:
         Sets player rank
         """
         self.rank = rank
+
+
+# Testing area
+if __name__ == "__main__":
+    pass
