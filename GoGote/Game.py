@@ -54,6 +54,14 @@ class Game:
             hash(self.current_board.postion)
         #  TODO: here check for ko and update accordingly
 
+    def check_position_for_ko(self, position):
+        """
+        checks if position is found in ko_hash_table
+
+        returns True if found; False otherwise
+        """
+        return hash(position) in self.ko_hash_table.values
+
     # Methods to implement
     # def make_move(self, x, y):
     # def pass(self):
