@@ -4,7 +4,20 @@ class Board:
     Objects of this class represent the state of the go board at
     given move.
 
-    Here be more docstring TODO
+    Object has the following fields:
+        size: an integer representing the board size.
+        position: an size x size matrix whose values represent the status of
+                  the according position.
+                  Valid statuses:
+                    0 :: empty
+                    1 :: black
+                    2 :: white
+                    3 :: ko
+        caps_black: an integer representing the black stones captured
+        caps_white: an integer representing the white stones captured
+        ko_status: boolean indecationg a position blocked by ko
+        move_number: integer representing the number of the current move. (May
+                     not be part of Board but Game soon)
     """
 
     # Aliases
@@ -21,6 +34,7 @@ class Board:
         self.caps_white = caps_white
         self.move_number = move_number
         self.size = size
+        self.ko_status = False
 
     def __str__(self):
         """String representation of the board
@@ -52,9 +66,9 @@ class Board:
                 neighbours.add((x, y))
         return neighbours
 
-    def set_field(self, x, y, status):
+    def set_position(self, x, y, status):
         """
-        sets field (x, y) to status.
+        sets position (x, y) to status.
 
         legal inputs for status are:
             empty: 0, "e", "empty", self.empty
@@ -71,7 +85,7 @@ class Board:
         elif status in (3, "k", "ko"):
             self.postion[x][y] = self.ko
         else:
-            print("wrong input")  # TODO ERROR handeling
+            raise ValueError('invalid argument for status')
 
     def is_empty(self, x, y):
         """
@@ -89,7 +103,7 @@ class Board:
         """
         status1 = self.postion[x][y]
         status2 = self.postion[x2][y2]
-        # empy fields shall be considered friedly to each other, incl ko
+        # empy positions shall be considered friedly to each other, incl ko
         for status in [status1, status2]:
             if status == self.ko:
                 status = self.empty
@@ -147,12 +161,12 @@ class Board:
     def kill_stone(self, x, y):
         if self.postion[x][y] == self.black:
             self.caps_black += 1
-            self.set_field = self.empty
+            self.set_position = self.empty
         elif self.postion[x][y] == self.white:
             self.caps_white += 1
-            self.set_field = self.empty
+            self.set_position = self.empty
         else:
-            print("cant kill nonexisting stone")  # TODO: ERROR handeling
+            raise ValueError("cant kill nonexisting stone")
 
     def change_caps(self, n, color):
         """
@@ -170,11 +184,12 @@ class Board:
         else:
             print("unknow color signature")  # TODO ERROR HANDELING
 
+
 # Testing area
 if __name__ == "__main__":
     testspiel = Board(size=8)
 
-    testspiel.set_field(2, 4, testspiel.black)
+    testspiel.set_position(2, 4, "KArtoffel")
     testspiel.postion[1][4] = 1
     testspiel.postion[3][5] = 1
     testspiel.postion[3][4] = 1
@@ -185,6 +200,6 @@ if __name__ == "__main__":
     testspiel.check_legal()
 
     spiel2 = Board(size=1)
-    spiel2.set_field(0, 0, 1)
+    spiel2.set_position(0, 0, 1)
     print(spiel2)
     spiel2.check_legal()
