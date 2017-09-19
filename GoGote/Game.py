@@ -44,14 +44,14 @@ class Game:
         """
         #  update game and hash table
         self.game_history[self.move_counter] = move
+        #  update board position and move_counter
+        self.current_board = new_board
+        self.move_counter += 1
         #  change player
         if self.current_board.player == self.current_board.black:
             self.current_board.player = self.current_board.white
         elif self.current_board.player == self.current_board.white:
             self.current_board.player = self.current_board.black
-        #  update board position and move_counter
-        self.current_board = new_board
-        self.move_counter += 1
         #  add new position to ko_hash_table
         self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
         #  TODO: here check for ko and update accordingly
@@ -75,9 +75,55 @@ class Game:
         """
         self.next_move(None, self.current_board, True)
         #  TODO: remove Ko block maybe?
+
+    def play_move(self, x, y):
+        """
+        plays a move at (x, y)
+        """
+        #  create temp board
+        temp_board = copy(self.current_board)
+        if not temp_board.is_empty(x, y):
+            #  TODO define IllegalMoveError
+            raise ValueError("can only play on empty positions")
+        #  place stone on temp board
+        temp_board.set_position(x, y, temp_board.player)
+        neighbours = temp_board.get_neighbours(x, y)
+        #  remove empty field form neighbours
+        to_remove = set()
+        for stone in neighbours:
+            if temp_board.is_empty(*stone):
+                to_remove.add(stone)
+        neighbours -= to_remove
+        #  remove friendly stones --> left with enemies
+        to_remove = set()
+        for stone in neighbours:
+            if temp_board.is_friend(x, y, *stone):
+                    to_remove.add(stone)
+        neighbours -= to_remove
+        #  check and kill neighbouring enemy groups if neccacary
+        checked = set()
+        for stone in neighbours:
+            print("STONE:", stone, "checked:", checked)
+            if stone in checked:
+                continue
+            group_info = temp_board.get_group_info(*stone)
+            print("group_info", group_info["libs"])
+            #  kill dead stones
+            if not group_info["libs"]:
+                for stone in group_info["group"]:
+                    temp_board.kill_stone(*stone)
+            checked.union(group_info["group"])
+        #  check if played stone has liberties
+        # group_info = temp_board.get_group_info(x, y)
+        if not temp_board.get_group_info(x, y)["libs"]:
+            raise ValueError("IllegalMoveError: no liberties")
+        else:
+            #  move gets played
+            self.next_move((x, y), temp_board)
+
     # Methods to implement
-    # def make_move(self, x, y):
-    # def check_ko(self):
+        # def make_move(self, x, y):
+        # def check_ko(self):
 
 
 # Testing area
@@ -85,6 +131,10 @@ if __name__ == "__main__":
     player1 = Player.Player("Max Mustermann", "10k")
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
-    new_board = copy(testgame.current_board)
-    new_board.set_position(4, 4, "b")
-    testgame.next_move((4, 4), )
+    testgame.play_move(0, 1)
+    print("--")
+    testgame.play_move(0, 0)
+    print("------------------------------------")
+    testgame.play_move(1, 0)
+    testgame.play_move(0, 0)
+    print(testgame.current_board)
