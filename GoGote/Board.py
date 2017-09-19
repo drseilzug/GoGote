@@ -138,13 +138,14 @@ class Board:
             for stone in neighbours:
                 if self.is_friend(*current_stone, *stone):
                     to_check.add(stone)
-                elif self.is_empty:
+                elif self.is_empty(*stone):
                     libs = True
-                    break
+                    checked.add(stone)
+                    return {'libs': libs, 'group': checked}
             checked.add(current_stone)
         return {'libs': libs, 'group': checked}
 
-    def check_legal(self):  # work in progress
+    def check_legal(self):
         """
         returns True of Boad is a legal go position
         i.e. every stone belongs to a group with liberties
@@ -172,10 +173,10 @@ class Board:
         """
         if self.postion[x][y] == self.black:
             self.caps_black += 1
-            self.set_position = self.empty
+            self.set_position(x, y, self.empty)
         elif self.postion[x][y] == self.white:
             self.caps_white += 1
-            self.set_position = self.empty
+            self.set_position(x, y, self.empty)
         else:
             raise ValueError("cant kill nonexisting stone")
 
@@ -213,12 +214,14 @@ if __name__ == "__main__":
     testspiel.postion[3][4] = 1
     testspiel.postion[6][6] = 2
     testspiel.postion[7][6] = 2
+    testspiel.set_position(1, 0, "b")
+    testspiel.set_position(0, 1, "b")
+    testspiel.set_position(0, 0, "w")
+    print(testspiel)
+    print("KILL")
+    testspiel.kill_stone(0, 0)
     print(testspiel)
 
-    testspiel.check_legal()
-
-    spiel2 = Board(size=1)
-    spiel2.set_position(0, 0, 1)
     #  print(spiel2)
     #  spiel2.check_legal()
-    print(testspiel.board_hash())
+    #  print(testspiel.board_hash())
