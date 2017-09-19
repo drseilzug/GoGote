@@ -26,7 +26,7 @@ class Board:
     white = 2
     ko = 3
 
-    def __init__(self, player=black, size=19,
+    def __init__(self, size=19,
                  caps_black=0, caps_white=0, last_move=None):
         # Initialize board matrix and other fields
         self.postion = [[0]*size for _ in range(size)]
