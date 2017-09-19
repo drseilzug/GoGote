@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import Board
 import Player
+from copy import copy as copy
 
 
 class Game:
@@ -14,6 +15,7 @@ class Game:
         ko_hash_table:: a dict with hashes of the positions that have occured
                         keyed by the move_counter
         current_player:: the player whos move it is
+        consecutive_passes:: counts the number of consecutive passes
     """
 
     def __init__(self, player_black=Player.Player(),
@@ -27,17 +29,20 @@ class Game:
         self.game_history = game_history
         #  Initialize hash table and add starting position
         self.ko_hash_table = ko_hash_table
-        self.ko_hash_table[self.move_counter] = hash(current_board.postion)
+        self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
         #  somehow implement an argument to choose current player.
         self.current_player = self.current_board.black
+        #  consecutive_passes always 0 for new board
+        self.consecutive_passes = 0
 
-    def next_move(self, move, new_board):
+    def next_move(self, move, new_board, passed=False):
         """
         increments the move
         adds move to game_history
         adds hash to ko_hash_table
         changes current_player
         updated the current_board
+        updates consecutive_passes counter
         """
         #  update game and hash table
         self.game_history[self.move_counter] = move
@@ -50,18 +55,28 @@ class Game:
         self.current_board = new_board
         self.move_counter += 1
         #  add new position to ko_hash_table
-        self.ko_hash_table[self.move_counter] = \
-            hash(self.current_board.postion)
+        self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
         #  TODO: here check for ko and update accordingly
+        #  update/reset passing counter
+        if passed:
+            self.consecutive_passes += 1
+        else:
+            self.consecutive_passes = 0
 
-    def check_position_for_ko(self, position):
+    def check_for_ko(self, position):
         """
-        checks if position is found in ko_hash_table
+        checks if current_board is found in ko_hash_table
 
         returns True if found; False otherwise
         """
-        return hash(position) in self.ko_hash_table.values
+        return self.current_board.board_hash() in self.ko_hash_table.values
 
+    def pass_move(self):
+        """
+        passing
+        """
+        self.next_move(None, self.current_board, True)
+        #  TODO: remove Ko block maybe?
     # Methods to implement
     # def make_move(self, x, y):
     # def pass(self):
@@ -73,5 +88,6 @@ if __name__ == "__main__":
     player1 = Player.Player("Max Mustermann", "10k")
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
-    new_position=self.current_board.position
-    testgame.next_move((4,4), )
+    new_board = copy(testgame.current_board)
+    new_board.set_position(4, 4, "b")
+    testgame.next_move((4, 4), )
