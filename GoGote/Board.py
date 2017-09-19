@@ -48,8 +48,9 @@ class Board:
                     repr += "O"
                 elif col == self.black:
                     repr += "#"
-                elif col == self.ko:
-                    repr += "*"
+            # feature removed until non stupid hash function TODO
+            #    elif col == self.ko:
+            #        repr += "*"
                 else:
                     repr += "."
             repr += "\n"
@@ -153,7 +154,6 @@ class Board:
             (x, y) = stone
             if self.postion[x][y] == self.black or self.white:
                 group_status = self.get_group_info(*stone)
-                print(group_status["libs"], "LALALALA")
                 legal = legal and group_status["libs"]
                 stones -= group_status["group"]
         return legal
@@ -184,12 +184,19 @@ class Board:
         else:
             print("unknow color signature")  # TODO ERROR HANDELING
 
+    def board_hash(self):
+        """
+        returns a hash of the str rep ob the board.
+        until i know how to do it..... better....
+        """
+        return hash(str(self))
+
 
 # Testing area
 if __name__ == "__main__":
     testspiel = Board(size=8)
 
-    testspiel.set_position(2, 4, "KArtoffel")
+    testspiel.set_position(2, 4, "b")
     testspiel.postion[1][4] = 1
     testspiel.postion[3][5] = 1
     testspiel.postion[3][4] = 1
@@ -201,5 +208,6 @@ if __name__ == "__main__":
 
     spiel2 = Board(size=1)
     spiel2.set_position(0, 0, 1)
-    print(spiel2)
-    spiel2.check_legal()
+    #  print(spiel2)
+    #  spiel2.check_legal()
+    print(testspiel.board_hash())
