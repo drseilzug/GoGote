@@ -30,8 +30,6 @@ class Game:
         #  Initialize hash table and add starting position
         self.ko_hash_table = ko_hash_table
         self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
-        #  somehow implement an argument to choose current player.
-        self.current_player = self.current_board.black
         #  consecutive_passes always 0 for new board
         self.consecutive_passes = 0
 
@@ -47,10 +45,10 @@ class Game:
         #  update game and hash table
         self.game_history[self.move_counter] = move
         #  change player
-        if self.current_player == self.current_board.black:
-            self.current_player = self.current_board.white
-        elif self.current_player == self.current_board.white:
-            self.current_player = self.current_board.black
+        if self.current_board.player == self.current_board.black:
+            self.current_board.player = self.current_board.white
+        elif self.current_board.player == self.current_board.white:
+            self.current_board.player = self.current_board.black
         #  update board position and move_counter
         self.current_board = new_board
         self.move_counter += 1
@@ -79,7 +77,6 @@ class Game:
         #  TODO: remove Ko block maybe?
     # Methods to implement
     # def make_move(self, x, y):
-    # def pass(self):
     # def check_ko(self):
 
 
