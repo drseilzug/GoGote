@@ -57,6 +57,11 @@ class Board:
                 else:
                     repr += "."
             repr += "\n"
+        repr += "\n"
+        if self.player == self.black:
+            repr += "black to play"
+        elif self.player == self.white:
+            repr += "white to play"
         return repr
 
     def get_neighbours(self, x, y):
