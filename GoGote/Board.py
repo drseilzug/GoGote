@@ -18,6 +18,9 @@ class Board:
         ko_status: boolean indecationg a position blocked by ko
         last_move: 2-Tuple with ints indicating the coordinates of the
                    last move. None if no last move.
+        player: player to move
+            1 :: black
+            2 :: white
     """
 
     # Aliases
@@ -26,15 +29,15 @@ class Board:
     white = 2
     ko = 3
 
-    def __init__(self, size=19,
-                 caps_black=0, caps_white=0, last_move=None):
+    def __init__(self, size=19, player=1,
+                 caps_black=0, caps_white=0):
         # Initialize board matrix and other fields
         self.postion = [[0]*size for _ in range(size)]
         self.caps_black = caps_black
         self.caps_white = caps_white
         self.size = size
         self.ko_status = False
-        self.last_move = last_move
+        self.player = player
 
     def __str__(self):
         """String representation of the board
