@@ -125,7 +125,7 @@ class Board:
         """
         returns information on the group at (x, y) as a dictonary
             "libs":boolean True if group has liberties
-            "stones":set contains coordiantes of stones belonging to group
+            "group":set contains coordiantes of stones belonging to group
                     only stones that were ckecked until liberty was found.
                     i.e. if libs == False stones contains whole group
         """
@@ -167,6 +167,9 @@ class Board:
         return legal
 
     def kill_stone(self, x, y):
+        """
+        removes stone (x, y) from board and updates captures accordingly
+        """
         if self.postion[x][y] == self.black:
             self.caps_black += 1
             self.set_position = self.empty
@@ -180,9 +183,9 @@ class Board:
         """
         changes captured of color stones by integer n
 
-        color::
-            black: 1, "b", "black", self.black
-            white: 2, "w", "white", self.white
+        color:
+            black :: 1, "b", "black", self.black
+            white :: 2, "w", "white", self.white
         """
         # TODO imput error handeling
         if color in (self.black, "b", "black"):
