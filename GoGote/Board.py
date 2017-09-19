@@ -16,8 +16,8 @@ class Board:
         caps_black: an integer representing the black stones captured
         caps_white: an integer representing the white stones captured
         ko_status: boolean indecationg a position blocked by ko
-        move_number: integer representing the number of the current move. (May
-                     not be part of Board but Game soon)
+        last_move: 2-Tuple with ints indicating the coordinates of the
+                   last move. None if no last move.
     """
 
     # Aliases
@@ -26,15 +26,15 @@ class Board:
     white = 2
     ko = 3
 
-    def __init__(self, move_number=0, player=black, size=19,
-                 caps_black=0, caps_white=0):
+    def __init__(self, player=black, size=19,
+                 caps_black=0, caps_white=0, last_move=None):
         # Initialize board matrix and other fields
         self.postion = [[0]*size for _ in range(size)]
         self.caps_black = caps_black
         self.caps_white = caps_white
-        self.move_number = move_number
         self.size = size
         self.ko_status = False
+        self.last_move = last_move
 
     def __str__(self):
         """String representation of the board
