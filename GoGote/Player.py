@@ -7,23 +7,31 @@ class Player:
     """
 
     def __init__(self, name="Generic Name", rank="?"):
-        self.rank = rank
-        self.name = name
+        if isinstance(name, str) and isinstance(rank, str):
+            self.rank = rank
+            self.name = name
+        else:
+            raise TypeError("name and rank have to be strings")
 
-    # TODO: Error handling for non sting inputs
     def set_name(self, name):
         """
         Sets player name.
         """
-        self.name = name
+        if isinstance(name, str):
+            self.name = name
+        else:
+            raise TypeError("name has to be a string")
 
     def set_rank(self, rank):
         """
         Sets player rank
         """
-        self.rank = rank
+        if isinstance(rank, str):
+            self.rank = rank
+        else:
+            raise TypeError("rank has to be a string")
 
 
 # Testing area
 if __name__ == "__main__":
-    pass
+    player = Player("John Dow", "4k")
