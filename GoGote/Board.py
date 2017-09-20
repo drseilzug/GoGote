@@ -192,7 +192,7 @@ class Board:
         elif color in (self.white, "3", "white"):
             self.capsWhite += n
         else:
-            print("unknow color signature")  # TODO ERROR HANDELING
+            raise ValueError("unknow color signature")
 
     def boardHash(self):
         """
