@@ -1,129 +1,136 @@
 #! /usr/bin/env python3
 import Board
 import Player
-from copy import copy as copy
+from copy import copy
 
 
 class Game:
     """
     Fields:
-        player_black:: a Player object containing Data on the black player
-        player_white:: a Player object containing Data on the white player
-        current_board:: a Board object containing the current board statuses
-        move_counter:: an integer for the move count
-        game_history:: a dict containing the moves keyed by the move_counter
-        ko_hash_table:: a dict with hashes of the positions that have occured
-                        keyed by the move_counter
-        current_player:: the player whos move it is
-        consecutive_passes:: counts the number of consecutive passes
+        playerBlack:: a Player object containing Data on the black player
+        playerWhite:: a Player object containing Data on the white player
+        currentBoard:: a Board object containing the current board statuses
+        moveCounter:: an integer for the move count
+        gameHistory:: a dict containing the moves keyed by the moveCounter
+        koHashTable:: a dict with lists of boards that have occured
+                        keyed by the board hashes
+        consecutivePasses:: counts the number of consecutive passes
     """
 
-    def __init__(self, player_black=Player.Player(),
-                 player_white=Player.Player(), current_board=Board.Board(),
-                 move_counter=0,
-                 game_history={}, ko_hash_table={}):
-        self.player_black = player_black
-        self.player_white = player_white
-        self.current_board = current_board
-        self.move_counter = move_counter
-        self.game_history = game_history
+    def __init__(self, playerBlack=Player.Player(),
+                 playerWhite=Player.Player(), currentBoard=Board.Board(),
+                 moveCounter=0,
+                 gameHistory={}, koHashTable={}):
+        self.playerBlack = playerBlack
+        self.playerWhite = playerWhite
+        self.currentBoard = currentBoard
+        self.moveCounter = moveCounter
+        self.gameHistory = gameHistory
         #  Initialize hash table and add starting position
-        self.ko_hash_table = ko_hash_table
-        self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
-        #  consecutive_passes always 0 for new board
-        self.consecutive_passes = 0
+        self.koHashTable = koHashTable
+        self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
+        #  consecutivePasses always 0 for new board
+        self.consecutivePasses = 0
 
-    def next_move(self, move, new_board, passed=False):
+    def nextMo(self, move, newBoard, passed=False):
         """
         increments the move
-        adds move to game_history
-        adds hash to ko_hash_table
-        changes current_player
-        updated the current_board
-        updates consecutive_passes counter
+        adds move to gameHistory
+        adds hash to koHashTable
+        changes current Player
+        updated the currentBoard
+        updates consecutivePasses counter
         """
         #  update game and hash table
-        self.game_history[self.move_counter] = move
-        #  update board position and move_counter
-        self.current_board = new_board
-        self.move_counter += 1
+        self.gameHistory[self.moveCounter] = move
+        #  update board position and moveCounter
+        self.currentBoard = newBoard
+        self.moveCounter += 1
         #  change player
-        if self.current_board.player == self.current_board.black:
-            self.current_board.player = self.current_board.white
-        elif self.current_board.player == self.current_board.white:
-            self.current_board.player = self.current_board.black
-        #  add new position to ko_hash_table
-        self.ko_hash_table[self.move_counter] = self.current_board.board_hash()
+        if self.currentBoard.player == self.currentBoard.black:
+            self.currentBoard.player = self.currentBoard.white
+        elif self.currentBoard.player == self.currentBoard.white:
+            self.currentBoard.player = self.currentBoard.black
+        #  add new position to koHashTable
+        # TODO
         #  TODO: here check for ko and update accordingly
         #  update/reset passing counter
         if passed:
-            self.consecutive_passes += 1
+            self.consecutivePasses += 1
         else:
-            self.consecutive_passes = 0
+            self.consecutivePasses = 0
 
-    def check_for_ko(self, position):
+    def addBoardToHash(self):
         """
-        checks if current_board is found in ko_hash_table
+        Adds self.currentBoard to self.koHashTable
+        """
+        self.koHashTable[self.currentBoard.boardHash()].add(self.currentBoard)
 
+    def checkForKo(self, board):
+        """
+        checks if board is found in koHashTable
+        TODO: default value for board is self.currentBoard
         returns True if found; False otherwise
         """
-        return self.current_board.board_hash() in self.ko_hash_table.values
+        for koBoard in self.koHashTable[self.boardHash()]:
+            if koBoard.position == board.position \
+                    and koBoard.player == board.player:
+                return True
+            else:
+                return False
 
-    def pass_move(self):
+    def passMove(self):
         """
         passing
         """
-        self.next_move(None, self.current_board, True)
-        #  TODO: remove Ko block maybe?
+        self.nextMov(None, self.currentBoard, True)
+        #  TODO: remove Ko block maybe? (prob not)
 
-    def play_move(self, x, y):
+    def playMove(self, x, y):
         """
         plays a move at (x, y)
         """
         #  create temp board
-        temp_board = copy(self.current_board)
-        if not temp_board.is_empty(x, y):
+        tempBoard = copy(self.currentBoard)
+        if not tempBoard.isEmpty(x, y):
             #  TODO define IllegalMoveError
             raise ValueError("can only play on empty positions")
         #  place stone on temp board
-        temp_board.set_position(x, y, temp_board.player)
-        neighbours = temp_board.get_neighbours(x, y)
+        tempBoard.setPosition(x, y, tempBoard.player)
+        neighbours = tempBoard.getNeighbours(x, y)
         #  remove empty field form neighbours
-        to_remove = set()
+        toRemove = set()
         for stone in neighbours:
-            if temp_board.is_empty(*stone):
-                to_remove.add(stone)
-        neighbours -= to_remove
+            if tempBoard.isEmpty(*stone):
+                toRemove.add(stone)
+        neighbours -= toRemove
         #  remove friendly stones --> left with enemies
-        to_remove = set()
+        toRemove = set()
         for stone in neighbours:
-            if temp_board.is_friend(x, y, *stone):
-                    to_remove.add(stone)
-        neighbours -= to_remove
+            if tempBoard.isFriend(x, y, *stone):
+                    toRemove.add(stone)
+        neighbours -= toRemove
         #  check and kill neighbouring enemy groups if neccacary
         checked = set()
         for stone in neighbours:
             print("STONE:", stone, "checked:", checked)
             if stone in checked:
                 continue
-            group_info = temp_board.get_group_info(*stone)
-            print("group_info", group_info["libs"])
+            groupInfo = tempBoard.getGroupInfo(*stone)
             #  kill dead stones
-            if not group_info["libs"]:
-                for stone in group_info["group"]:
-                    temp_board.kill_stone(*stone)
-            checked.union(group_info["group"])
+            if not groupInfo["libs"]:
+                for stone in groupInfo["group"]:
+                    tempBoard.killStone(*stone)
+            checked.union(groupInfo["group"])
         #  check if played stone has liberties
-        # group_info = temp_board.get_group_info(x, y)
-        if not temp_board.get_group_info(x, y)["libs"]:
+        if not tempBoard.getGroupInfo(x, y)["libs"]:
             raise ValueError("IllegalMoveError: no liberties")
         else:
             #  move gets played
-            self.next_move((x, y), temp_board)
+            self.nextMove((x, y), tempBoard)
 
     # Methods to implement
-        # def make_move(self, x, y):
-        # def check_ko(self):
+        # def makeMove(self, x, y):
 
 
 # Testing area
@@ -131,10 +138,10 @@ if __name__ == "__main__":
     player1 = Player.Player("Max Mustermann", "10k")
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
-    testgame.play_move(0, 1)
+    testgame.playMove(0, 1)
     print("--")
-    testgame.play_move(0, 0)
+    testgame.playMove(0, 0)
     print("------------------------------------")
-    testgame.play_move(1, 0)
-    testgame.play_move(0, 0)
-    print(testgame.current_board)
+    testgame.playMove(1, 0)
+    testgame.playMove(0, 5)
+    print(testgame.currentBoard)

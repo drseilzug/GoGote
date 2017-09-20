@@ -13,11 +13,9 @@ class Board:
                     1 :: black
                     2 :: white
                     3 :: ko
-        caps_black: an integer representing the black stones captured
-        caps_white: an integer representing the white stones captured
-        ko_status: boolean indecationg a position blocked by ko
-        last_move: 2-Tuple with ints indicating the coordinates of the
-                   last move. None if no last move.
+        capsBlack: an integer representing the black stones captured
+        capsWhite: an integer representing the white stones captured
+        koStatus: boolean indecationg a position blocked by ko
         player: player to move
             1 :: black
             2 :: white
@@ -30,13 +28,13 @@ class Board:
     ko = 3
 
     def __init__(self, size=19, player=1,
-                 caps_black=0, caps_white=0):
+                 capsBlack=0, capsWhite=0):
         # Initialize board matrix and other fields
         self.postion = [[0]*size for _ in range(size)]
-        self.caps_black = caps_black
-        self.caps_white = caps_white
+        self.capsBlack = capsBlack
+        self.capsWhite = capsWhite
         self.size = size
-        self.ko_status = False
+        self.koStatus = False
         self.player = player
 
     def __str__(self):
@@ -64,7 +62,7 @@ class Board:
             repr += "white to play"
         return repr
 
-    def get_neighbours(self, x, y):
+    def getNeighbours(self, x, y):
         """
         Returns a set with the coords of all neighbours of (x,y)
         as tupels
@@ -75,7 +73,7 @@ class Board:
                 neighbours.add((x, y))
         return neighbours
 
-    def set_position(self, x, y, status):
+    def setPosition(self, x, y, status):
         """
         sets position (x, y) to status.
 
@@ -96,7 +94,7 @@ class Board:
         else:
             raise ValueError('invalid argument for status')
 
-    def is_empty(self, x, y):
+    def isEmpty(self, x, y):
         """
         checks if (x, y) has no stones on it
         """
@@ -105,7 +103,7 @@ class Board:
         else:
             return False
 
-    def is_friend(self, x, y, x2, y2):
+    def isFriend(self, x, y, x2, y2):
         """
         Checks whether (x, y) and (x2, y2) are of the same
         faction.
@@ -121,7 +119,7 @@ class Board:
         else:
             return False
 
-    def get_group_info(self, x, y):
+    def getGroupInfo(self, x, y):
         """
         returns information on the group at (x, y) as a dictonary
             "libs":boolean True if group has liberties
@@ -129,23 +127,23 @@ class Board:
                     only stones that were ckecked until liberty was found.
                     i.e. if libs == False stones contains whole group
         """
-        to_check = {(x, y)}
+        toCheck = {(x, y)}
         checked = set()
         libs = False
-        while len(to_check) > 0:
-            current_stone = to_check.pop()
-            neighbours = self.get_neighbours(*current_stone) - checked
+        while len(toCheck) > 0:
+            currentStone = toCheck.pop()
+            neighbours = self.getNeighbours(*currentStone) - checked
             for stone in neighbours:
-                if self.is_friend(*current_stone, *stone):
-                    to_check.add(stone)
-                elif self.is_empty(*stone):
+                if self.isFriend(*currentStone, *stone):
+                    toCheck.add(stone)
+                elif self.isEmpty(*stone):
                     libs = True
                     checked.add(stone)
                     return {'libs': libs, 'group': checked}
-            checked.add(current_stone)
+            checked.add(currentStone)
         return {'libs': libs, 'group': checked}
 
-    def check_legal(self):
+    def checkLegal(self):
         """
         returns True of Boad is a legal go position
         i.e. every stone belongs to a group with liberties
@@ -162,25 +160,25 @@ class Board:
             stone = stones.pop()
             (x, y) = stone
             if self.postion[x][y] == self.black or self.white:
-                group_status = self.get_group_info(*stone)
-                legal = legal and group_status["libs"]
-                stones -= group_status["group"]
+                groupStatus = self.getGroupInfo(*stone)
+                legal = legal and groupStatus["libs"]
+                stones -= groupStatus["group"]
         return legal
 
-    def kill_stone(self, x, y):
+    def killStone(self, x, y):
         """
         removes stone (x, y) from board and updates captures accordingly
         """
         if self.postion[x][y] == self.black:
-            self.caps_black += 1
-            self.set_position(x, y, self.empty)
+            self.capsBlack += 1
+            self.setPosition(x, y, self.empty)
         elif self.postion[x][y] == self.white:
-            self.caps_white += 1
-            self.set_position(x, y, self.empty)
+            self.capsWhite += 1
+            self.setPosition(x, y, self.empty)
         else:
             raise ValueError("cant kill nonexisting stone")
 
-    def change_caps(self, n, color):
+    def changeCaps(self, n, color):
         """
         changes captured of color stones by integer n
 
@@ -190,13 +188,13 @@ class Board:
         """
         # TODO imput error handeling
         if color in (self.black, "b", "black"):
-            self.caps_black += n
+            self.capsBlack += n
         elif color in (self.white, "3", "white"):
-            self.caps_white += n
+            self.capsWhite += n
         else:
             print("unknow color signature")  # TODO ERROR HANDELING
 
-    def board_hash(self):
+    def boardHash(self):
         """
         returns a hash of the str rep ob the board.
         until i know how to do it..... better....
@@ -208,20 +206,16 @@ class Board:
 if __name__ == "__main__":
     testspiel = Board(size=8)
 
-    testspiel.set_position(2, 4, "b")
+    testspiel.setPosition(2, 4, "b")
     testspiel.postion[1][4] = 1
     testspiel.postion[3][5] = 1
     testspiel.postion[3][4] = 1
     testspiel.postion[6][6] = 2
     testspiel.postion[7][6] = 2
-    testspiel.set_position(1, 0, "b")
-    testspiel.set_position(0, 1, "b")
-    testspiel.set_position(0, 0, "w")
+    testspiel.setPosition(1, 0, "b")
+    testspiel.setPosition(0, 1, "b")
+    testspiel.setPosition(0, 0, "w")
     print(testspiel)
     print("KILL")
-    testspiel.kill_stone(0, 0)
+    testspiel.killStone(0, 0)
     print(testspiel)
-
-    #  print(spiel2)
-    #  spiel2.check_legal()
-    #  print(testspiel.board_hash())
