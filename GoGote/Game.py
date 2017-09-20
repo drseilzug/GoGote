@@ -32,7 +32,7 @@ class Game:
         #  consecutivePasses always 0 for new board
         self.consecutivePasses = 0
 
-    def nextMo(self, move, newBoard, passed=False):
+    def nextMove(self, move, newBoard, passed=False):
         """
         increments the move
         adds move to gameHistory
@@ -52,7 +52,7 @@ class Game:
         elif self.currentBoard.player == self.currentBoard.white:
             self.currentBoard.player = self.currentBoard.black
         #  add new position to koHashTable
-        # TODO
+        self.addBoardToHash()
         #  TODO: here check for ko and update accordingly
         #  update/reset passing counter
         if passed:
@@ -71,6 +71,8 @@ class Game:
         checks if board is found in koHashTable
         TODO: default value for board is self.currentBoard
         returns True if found; False otherwise
+
+        TODO: implement toogle for KO/SUPERKO/no KO
         """
         for koBoard in self.koHashTable[self.boardHash()]:
             if koBoard.position == board.position \
@@ -83,7 +85,7 @@ class Game:
         """
         passing
         """
-        self.nextMov(None, self.currentBoard, True)
+        self.nextMove(None, self.currentBoard, True)
         #  TODO: remove Ko block maybe? (prob not)
 
     def playMove(self, x, y):
@@ -125,6 +127,8 @@ class Game:
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
             raise ValueError("IllegalMoveError: no liberties")
+        elif self.checkForKo(tempBoard):
+            raise ValueError("IllegalMoveError: Forbidden due to Ko rule")
         else:
             #  move gets played
             self.nextMove((x, y), tempBoard)
