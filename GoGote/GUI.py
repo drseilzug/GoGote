@@ -2,8 +2,10 @@
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QAction, qApp,
                              QWidget)
-from PyQt5.QtGui import QIcon, QPainter
+from PyQt5.QtGui import QIcon, QPainter, QPen
 from PyQt5.QtCore import QPoint
+from PyQt5 import Qt
+
 from Game import Game
 
 
@@ -122,10 +124,20 @@ class Board_GUI(QWidget):
             painter.drawLine(line[0], line[-1])
         for (pointT, pointB) in zip(self.grid[0], self.grid[-1]):
             painter.drawLine(pointT, pointB)
+        self.drawHoshis(painter)
 
     def drawHoshis(self, painter):
         """ Draws Hoshi dots"""
-        pass  # TODO
+        hoshis = []
+        pen = QPen()
+        pen.setWidth(8)
+        painter.setPen(pen)
+
+        print("Debug:", self.board.getHoshis())
+        for (x, y) in self.board.getHoshis():
+            hoshis.append(self.grid[x][y])
+        for point in hoshis:
+            painter.drawPoint(point)
 
     def drawPosition(self, painter):
         """draws the positionon the Grid"""
