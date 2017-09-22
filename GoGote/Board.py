@@ -201,6 +201,20 @@ class Board:
         """
         return hash(str(self))
 
+    def getHoshis(self):
+        """
+        returns a set of coordinates for the Hoshis depending on
+        boardsize (atm 9, 13, 19)
+        TODO: all baord sizes
+        """
+        if self.size == 9:
+            return {(2, 2), (2, 5), (5, 2), (5, 5)}
+        elif self.size == 13:
+            return {(3, 3), (3, 9), (7, 7), (9, 3), (9, 9)}
+        elif self.size == 19:
+            return set((a, b) for a in [3, 9, 14] for b in [3, 9, 14])
+
+
 
 # Testing area
 if __name__ == "__main__":
@@ -219,3 +233,5 @@ if __name__ == "__main__":
     print("KILL")
     testspiel.killStone(0, 0)
     print(testspiel)
+    testspiel2 = Board()
+    print(testspiel2.getHoshis())
