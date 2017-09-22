@@ -212,8 +212,7 @@ class Board:
         elif self.size == 13:
             return {(3, 3), (3, 9), (7, 7), (9, 3), (9, 9)}
         elif self.size == 19:
-            return set((a, b) for a in [3, 9, 14] for b in [3, 9, 14])
-
+            return set((a, b) for a in [3, 9, 15] for b in [3, 9, 15])
 
 
 # Testing area
