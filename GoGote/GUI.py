@@ -80,15 +80,15 @@ class Board_GUI(QWidget):
         # TESTING TESTING TESTING:
 
     def boardWidth(self):
-        """returns the max width fitting into widget (14:15 board ratio)"""
+        """returns the max width fitting into widget"""
         width = self.contentsRect().width()
         height = self.contentsRect().height()
 
-        return min(width, height*14/15)
+        return min(width, height*12/13)
 
     def boardHeight(self):
-        """returns the max width fitting into widget (15:14 board ratio)"""
-        return self.boardWidth()*(15/14)
+        """returns the max width fitting into widget """
+        return self.boardWidth()*(13/12)
 
     def makeGrid(self):
         """returns coords for the Grid according to current window mesures"""
@@ -97,23 +97,14 @@ class Board_GUI(QWidget):
         baseWidth = self.boardWidth() / denom
         baseHeight = self.boardHeight() / denom
 
-        x = 0.8*baseWidth
-        y = 0.8*baseHeight
+        partionWidth = [(0.8+x)*baseWidth for x in range(self.board.size)]
+        partionHeight = [(0.8+x)*baseHeight for x in range(self.board.size)]
 
-        grid = []
-
-        for line in range(self.board.size):
-            grid.append([])
-            for row in range(self.board.size):
-                grid[line].append(QPoint(x, y))
-                x += baseHeight
-            x = 0.8*baseWidth
-            y += baseHeight
+        grid = [[QPoint(x, y) for x in partionWidth] for y in partionHeight]
         self.grid = grid
 
     def paintEvent(self, event):
         """draws the whole board using the other draw methods"""
-        # TODO:
         painter = QPainter(self)
         self.makeGrid()
         self.drawGrid(painter)
@@ -133,7 +124,6 @@ class Board_GUI(QWidget):
         pen.setWidth(8)
         painter.setPen(pen)
 
-        print("Debug:", self.board.getHoshis())
         for (x, y) in self.board.getHoshis():
             hoshis.append(self.grid[x][y])
         for point in hoshis:
