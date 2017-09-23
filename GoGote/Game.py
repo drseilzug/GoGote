@@ -64,7 +64,11 @@ class Game:
         """
         Adds self.currentBoard to self.koHashTable
         """
-        self.koHashTable[self.currentBoard.boardHash()].add(self.currentBoard)
+        newHash = self.currentBoard.boardHash()
+        if newHash in self.koHashTable:
+            self.koHashTable[newHash].add(self.currentBoard)
+        else:
+            self.koHashTable[newHash] = [self.currentBoard]
 
     def checkForKo(self, board):
         """
@@ -74,7 +78,10 @@ class Game:
 
         TODO: implement toogle for KO/SUPERKO/no KO
         """
-        for koBoard in self.koHashTable[self.boardHash()]:
+        newHash = board.boardHash()
+        if newHash not in self.koHashTable:
+            return False
+        for koBoard in self.koHashTable[newHash]:
             if koBoard.position == board.position \
                     and koBoard.player == board.player:
                 return True
@@ -133,9 +140,6 @@ class Game:
             #  move gets played
             self.nextMove((x, y), tempBoard)
 
-    # Methods to implement
-        # def makeMove(self, x, y):
-
 
 # Testing area
 if __name__ == "__main__":
@@ -148,4 +152,5 @@ if __name__ == "__main__":
     print("------------------------------------")
     testgame.playMove(1, 0)
     testgame.playMove(0, 5)
+    testgame.passMove()
     print(testgame.currentBoard)
