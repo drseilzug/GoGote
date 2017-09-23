@@ -66,7 +66,7 @@ class Game:
         """
         newHash = self.currentBoard.boardHash()
         if newHash in self.koHashTable:
-            self.koHashTable[newHash].add(self.currentBoard)
+            self.koHashTable[newHash].append(self.currentBoard)
         else:
             self.koHashTable[newHash] = [self.currentBoard]
 
@@ -152,5 +152,6 @@ if __name__ == "__main__":
     print("------------------------------------")
     testgame.playMove(1, 0)
     testgame.playMove(0, 5)
+    testgame.passMove()
     testgame.passMove()
     print(testgame.currentBoard)
