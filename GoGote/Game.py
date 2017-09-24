@@ -122,7 +122,6 @@ class Game:
         #  check and kill neighbouring enemy groups if neccacary
         checked = set()
         for stone in neighbours:
-            print("STONE:", stone, "checked:", checked)
             if stone in checked:
                 continue
             groupInfo = tempBoard.getGroupInfo(*stone)
