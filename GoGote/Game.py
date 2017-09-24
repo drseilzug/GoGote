@@ -2,6 +2,7 @@
 import Board
 import Player
 from copy import copy
+from GoExceptions import IllegalMoveError
 
 
 class Game:
@@ -132,9 +133,9 @@ class Game:
             checked.union(groupInfo["group"])
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
-            raise ValueError("IllegalMoveError: no liberties")
+            raise IllegalMoveError((x, y), "no liberties")
         elif self.checkForKo(tempBoard):
-            raise ValueError("IllegalMoveError: Forbidden due to Ko rule")
+            raise IllegalMoveError((x, y), "Forbidden due to Ko rule")
         else:
             #  move gets played
             self.nextMove((x, y), tempBoard)
@@ -146,10 +147,9 @@ if __name__ == "__main__":
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
     testgame.playMove(0, 1)
-    print("--")
     testgame.playMove(0, 0)
-    print("------------------------------------")
     testgame.playMove(1, 0)
+    testgame.playMove(0, 0)
     testgame.playMove(0, 5)
     testgame.passMove()
     testgame.passMove()
