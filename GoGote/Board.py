@@ -94,6 +94,10 @@ class Board:
         else:
             raise ValueError('invalid argument for status')
 
+    def getPosition(self, x, y):
+        """Returns the status of stone at (x, y)"""
+        return self.postion[x][y]
+
     def isEmpty(self, x, y):
         """
         checks if (x, y) has no stones on it
