@@ -28,16 +28,16 @@ class BoardGUIx(QWidget):
 
         self.grid = []
         self.drawGrid()
-        self.drawPosition()
+        self.createPosition()
         # Grid is drawn whenever resizeEvent is called, including on init
-
         self.view = QGraphicsView(self.scene)
         box = QHBoxLayout()
         box.addWidget(self.view)
         self.setLayout(box)
 
     def resizeEvent(self, e):
-        self.scene.clear()
+        self.view.fitInView(self.view.scene().sceneRect(), Qt.KeepAspectRatio)
+        # TODO: self.drawGrid()
 
     def boardWidth(self):
         """returns the max width fitting into widget"""
@@ -77,7 +77,6 @@ class BoardGUIx(QWidget):
     def drawGrid(self):
         """draws the background grid"""
         self.makeGrid()
-        print("entered draw grid")
         for line in self.grid:
             self.scene.addLine(*line[0], *line[-1])
         for (pointT, pointB) in zip(self.grid[0], self.grid[-1]):
@@ -95,20 +94,29 @@ class BoardGUIx(QWidget):
             self.scene.addEllipse(x-rad, y-rad, rad*2.0, rad*2.0,
                                   QPen(), QBrush(Qt.SolidPattern))
 
-    def createPositionDict(self):
-        pass
+    def updatePostion(self):
+        """
+        sets the colors for all stones in self.pos according
+        to the status in self.board
+        """
+        for (x, y) in self.pos:
+            color = self.board.getPosition(x, y)
+            self.pos[(x, y)].setColor(color)
 
-    def drawPosition(self):
+    def createPosition(self):
         """
-        Draws all Stones on the Board
-        including invisible ones for empty Fields
+        Creates the self.pos dictionary containing all possible stones on the
+        board initialized as empty stones
         """
+        self.pos = {}
         radius = self.stoneScale*self.baseWidth
         for row in range(self.board.size):
             for col in range(self.board.size):
                 (x, y) = self.grid[row][col]
-                color = self.board.postion[row][col]
-                self.scene.addItem(Stone(x, y, radius, color))
+                newStone = Stone(x, y, radius)
+                self.pos[(row, col)] = newStone
+                self.scene.addItem(newStone)
+        self.updatePostion()
 
 
 class Stone(QGraphicsItem):
@@ -117,7 +125,7 @@ class Stone(QGraphicsItem):
     x, y :: center Coords of Stone
     rad :: radius
     color:: the stone type
-        0, self.empty :: empty
+        0, self.empty :: empty *default
         1, self.black :: black
         2, self.white :: white
 
@@ -131,7 +139,7 @@ class Stone(QGraphicsItem):
     black = 1
     white = 2
 
-    def __init__(self, x, y, rad, color):
+    def __init__(self, x, y, rad, color=0):
         super().__init__()
 
         self.rad = rad
@@ -148,14 +156,18 @@ class Stone(QGraphicsItem):
         """ draws the actual Stone"""
         painter.setBrush(Qt.SolidPattern)
         if self.color == self.black:
-            painter.setBrush(QColor(255, 255, 255))
+            painter.setBrush(QColor(5, 5, 5))
         elif self.color == self.white:
-            painter.setBrush(QColor(0, 0, 0))
+            painter.setBrush(QColor(255, 255, 255))
         elif self.color == self.empty:
             self.setOpacity(0)
         else:
             return
         painter.drawEllipse(self.boundingRect())
+
+    def setColor(self, color):
+        """Method that sets the stone to color"""
+        self.color = color
 
 
 # Testing area
@@ -170,7 +182,7 @@ if __name__ == "__main__":
     game.playMove(2, 2)
 
     win = QMainWindow()
-    win.setGeometry(100, 100, 600, 800)
+    win.setGeometry(100, 100, 800, 800)
     board = BoardGUIx(win, game.currentBoard)
     win.setCentralWidget(board)
 
