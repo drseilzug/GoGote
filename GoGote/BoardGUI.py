@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsItem,
                              QApplication, QWidget, QGraphicsView, QHBoxLayout)
 from PyQt5.QtGui import QPen, QBrush, QColor  # ,QPainter
-from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtCore import QRectF, Qt, pyqtSignal, QObject
 from Game import Game
 
 
@@ -112,22 +112,33 @@ class BoardGUIx(QWidget):
         """
         Creates the self.pos dictionary containing all possible stones on the
         board initialized as empty stones
+
+        also connects a signal form each stone to ???
         """
         self.pos = {}
         radius = self.stoneScale*self.baseWidth
         for row in range(self.board.size):
             for col in range(self.board.size):
                 (x, y) = self.grid[row][col]
-                newStone = Stone(x, y, radius)
+                newStone = Stone(x, y, row, col, radius)
+                newStone.com.clicked.connect(self.test)
                 self.pos[(row, col)] = newStone
                 self.scene.addItem(newStone)
         self.updatePostion()
+
+    def test(self, row, col):
+        print("TEST", row, col)
+
+
+class Communicate(QObject):
+    clicked = pyqtSignal(int, int)
 
 
 class Stone(QGraphicsItem):
     """
     A Go stone QGraphicsItem
     x, y :: center Coords of Stone
+    row, col :: int coordinatest of the stone on the board
     rad :: radius
     color:: the stone type
         0, self.empty :: empty *default
@@ -144,15 +155,21 @@ class Stone(QGraphicsItem):
     black = 1
     white = 2
 
-    def __init__(self, x, y, rad, color=0):
+    def __init__(self, x, y, row, col, rad, color=0):
         super().__init__()
 
         self.rad = rad
         self.color = color
         self.setPos(x, y)
         self.hover = False
+        self.row = row
+        self.col = col
+
+        # signal
+        self.com = Communicate()
 
         self.setAcceptHoverEvents(True)
+        # self.setAcceptedMouseButtons
 
     def boundingRect(self):
         """ sets the outer rectangle for the QGrpahicsItem"""
@@ -170,7 +187,7 @@ class Stone(QGraphicsItem):
         elif self.color == self.empty:
             if self.hover:
                 painter.setBrush(QColor(150, 150, 150))
-                self.setOpacity(0.5)
+                self.setOpacity(0.4)
             else:
                 self.setOpacity(0.001)
         else:
@@ -189,6 +206,9 @@ class Stone(QGraphicsItem):
     def hoverLeaveEvent(self, e):
         self.hover = False
         self.update()
+
+    def mousePressEvent(self, e):
+        self.com.clicked.emit(self.row, self.col)
 
 
 # Testing area
