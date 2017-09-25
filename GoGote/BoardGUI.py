@@ -26,11 +26,17 @@ class BoardGUIx(QWidget):
         self.showCoords = False  # TODO
         self.scene = QGraphicsScene()
 
+        # grid containing coordinates for the scene
         self.grid = []
         self.drawGrid()
+
+        # stones for all positions are created and listed in self.pos dict
         self.createPosition()
-        # Grid is drawn whenever resizeEvent is called, including on init
+
+        # initialize and set layout + view
         self.view = QGraphicsView(self.scene)
+        self.view.setMouseTracking(True)
+        self.setMouseTracking(True)
         box = QHBoxLayout()
         box.addWidget(self.view)
         self.setLayout(box)
@@ -57,7 +63,6 @@ class BoardGUIx(QWidget):
         """
         # set scenesize to window size
         self.scene.setSceneRect(0, 0, self.boardWidth(), self.boardHeight())
-        # 0.8*baserectangle size for each border
         denom = self.board.size + 2*self.borderRatio
         baseWidth = self.boardWidth() / denom
         baseHeight = self.boardHeight() / denom
@@ -145,6 +150,9 @@ class Stone(QGraphicsItem):
         self.rad = rad
         self.color = color
         self.setPos(x, y)
+        self.hover = False
+
+        self.setAcceptHoverEvents(True)
 
     def boundingRect(self):
         """ sets the outer rectangle for the QGrpahicsItem"""
@@ -160,14 +168,27 @@ class Stone(QGraphicsItem):
         elif self.color == self.white:
             painter.setBrush(QColor(255, 255, 255))
         elif self.color == self.empty:
-            self.setOpacity(0)
+            if self.hover:
+                painter.setBrush(QColor(150, 150, 150))
+                self.setOpacity(0.5)
+            else:
+                self.setOpacity(0.001)
         else:
             return
+
         painter.drawEllipse(self.boundingRect())
 
     def setColor(self, color):
         """Method that sets the stone to color"""
         self.color = color
+
+    def hoverEnterEvent(self, e):
+        self.hover = True
+        self.update()
+
+    def hoverLeaveEvent(self, e):
+        self.hover = False
+        self.update()
 
 
 # Testing area
