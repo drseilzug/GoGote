@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 import sys
-from copy import deepcopy, copy
 
 from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject,
                              QApplication, QWidget, QGraphicsView, QHBoxLayout)
@@ -9,13 +8,16 @@ from PyQt5.QtCore import QRectF, Qt, pyqtSignal
 from Game import Game
 
 
-class BoardGUIx(QWidget):
+class BoardGUI(QWidget):
     """cointain the grafical representation of the Board"""
 
     # ratio of boardersize compared to the size of one base square
     borderRatio = 0.8
     baseRectRatio = 14/15  # 12/13 for normal ratio but looks weird
     stoneScale = 0.46
+
+    # siganl
+    stoneClicked = pyqtSignal(tuple)
 
     def __init__(self, parent, board):
         super().__init__()
@@ -130,10 +132,14 @@ class BoardGUIx(QWidget):
 
     def connecting(self):
         for key in self.pos:
-            self.pos[key].clicked.connect(lambda: self.test(*key))
+            self.pos[key].clicked.connect(lambda key=key: self.resend(key))
 
-    def test(self, row, col):
-        print("TEST", row, col)
+    def resend(self, pos):
+        """
+        emits the captured signal again,
+        with (int, in) parameter for stone clicked
+        """
+        self.stoneClicked.emit(pos)
 
 
 class Stone(QGraphicsObject):
@@ -169,7 +175,7 @@ class Stone(QGraphicsObject):
         self.hover = False
 
         self.setAcceptHoverEvents(True)
-        # self.setAcceptedMouseButtons
+        self.setAcceptedMouseButtons(Qt.LeftButton)
 
     def boundingRect(self):
         """ sets the outer rectangle for the QGrpahicsItem"""
@@ -181,8 +187,10 @@ class Stone(QGraphicsObject):
         """ draws the actual Stone"""
         painter.setBrush(Qt.SolidPattern)
         if self.color == self.black:
+            self.setOpacity(1)
             painter.setBrush(QColor(5, 5, 5))
         elif self.color == self.white:
+            self.setOpacity(1)
             painter.setBrush(QColor(255, 255, 255))
         elif self.color == self.empty:
             if self.hover:
@@ -224,7 +232,7 @@ if __name__ == "__main__":
 
     win = QMainWindow()
     win.setGeometry(100, 100, 800, 800)
-    board = BoardGUIx(win, game.currentBoard)
+    board = BoardGUI(win, game.currentBoard)
     win.setCentralWidget(board)
 
     win.show()
