@@ -136,12 +136,10 @@ class BoardGUIx(QWidget):
         print("TEST", row, col)
 
 
-
 class Stone(QGraphicsObject):
     """
     A Go stone QGraphicsItem
     x, y :: center Coords of Stone
-    row, col :: int coordinatest of the stone on the board
     rad :: radius
     color:: the stone type
         0, self.empty :: empty *default
