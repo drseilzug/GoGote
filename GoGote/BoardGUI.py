@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 import sys
-from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsItem,
+from copy import deepcopy, copy
+
+from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject,
                              QApplication, QWidget, QGraphicsView, QHBoxLayout)
 from PyQt5.QtGui import QPen, QBrush, QColor  # ,QPainter
-from PyQt5.QtCore import QRectF, Qt, pyqtSignal, QObject
+from PyQt5.QtCore import QRectF, Qt, pyqtSignal
 from Game import Game
 
 
@@ -120,21 +122,22 @@ class BoardGUIx(QWidget):
         for row in range(self.board.size):
             for col in range(self.board.size):
                 (x, y) = self.grid[row][col]
-                newStone = Stone(x, y, row, col, radius)
-                newStone.com.clicked.connect(self.test)
+                newStone = Stone(x, y, radius)
                 self.pos[(row, col)] = newStone
                 self.scene.addItem(newStone)
         self.updatePostion()
+        self.connecting()
+
+    def connecting(self):
+        for key in self.pos:
+            self.pos[key].clicked.connect(lambda: self.test(*key))
 
     def test(self, row, col):
         print("TEST", row, col)
 
 
-class Communicate(QObject):
-    clicked = pyqtSignal(int, int)
 
-
-class Stone(QGraphicsItem):
+class Stone(QGraphicsObject):
     """
     A Go stone QGraphicsItem
     x, y :: center Coords of Stone
@@ -151,22 +154,21 @@ class Stone(QGraphicsItem):
         setLastmove()
         add lastmoveMarker to drawing
     """
+    # class constants
     empty = 0
     black = 1
     white = 2
 
-    def __init__(self, x, y, row, col, rad, color=0):
+    # signal
+    clicked = pyqtSignal()
+
+    def __init__(self, x, y, rad, color=0):
         super().__init__()
 
         self.rad = rad
         self.color = color
         self.setPos(x, y)
         self.hover = False
-        self.row = row
-        self.col = col
-
-        # signal
-        self.com = Communicate()
 
         self.setAcceptHoverEvents(True)
         # self.setAcceptedMouseButtons
@@ -208,7 +210,7 @@ class Stone(QGraphicsItem):
         self.update()
 
     def mousePressEvent(self, e):
-        self.com.clicked.emit(self.row, self.col)
+        self.clicked.emit()
 
 
 # Testing area
