@@ -103,8 +103,8 @@ class Game:
         #  create temp board
         tempBoard = copy(self.currentBoard)
         if not tempBoard.isEmpty(x, y):
-            #  TODO define IllegalMoveError
-            raise ValueError("can only play on empty positions")
+            raise IllegalMoveError((x, y), "can only play on empty positions")
+            return
         #  place stone on temp board
         tempBoard.setPosition(x, y, tempBoard.player)
         neighbours = tempBoard.getNeighbours(x, y)
@@ -130,12 +130,16 @@ class Game:
             if not groupInfo["libs"]:
                 for stone in groupInfo["group"]:
                     tempBoard.killStone(*stone)
-            checked.union(groupInfo["group"])
+            checked.update(groupInfo["group"])
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
+            tempBoard.setPosition(x, y, tempBoard.empty)
             raise IllegalMoveError((x, y), "no liberties")
+            return
         elif self.checkForKo(tempBoard):
+            tempBoard.setPosition(x, y, tempBoard.empty)
             raise IllegalMoveError((x, y), "Forbidden due to Ko rule")
+            return
         else:
             #  move gets played
             self.nextMove((x, y), tempBoard)

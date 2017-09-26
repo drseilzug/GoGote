@@ -110,11 +110,6 @@ class GameWidget(QWidget):
         hbox.addLayout(vbox)
 
         self.setLayout(hbox)
-        self.game.playMove(1, 0)
-        self.game.playMove(0, 0)
-        self.game.playMove(0, 1)
-        self.game.playMove(1, 1)
-        boardW.updatePostion()
 
         # binding signals
         self.updateSignal.connect(boardW.updatePostion)
@@ -130,6 +125,8 @@ class GameWidget(QWidget):
         except(IllegalMoveError):
             print("Illegal Move")
         self.updateSignal.emit()
+        # DEBUG
+        print(self.game.currentBoard)
 
 
 class InfoWidget(QWidget):
