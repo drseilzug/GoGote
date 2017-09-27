@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject,
 from PyQt5.QtGui import QPen, QBrush, QColor  # ,QPainter
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal
 from Game import Game
+from GoColor import GoColor
 
 
 class BoardGUI(QWidget):
@@ -148,9 +149,9 @@ class Stone(QGraphicsObject):
     x, y :: center Coords of Stone
     rad :: radius
     color:: the stone type
-        0, self.empty :: empty *default
-        1, self.black :: black
-        2, self.white :: white
+        0, GoColor.empty :: empty *default
+        1, CoColor.black :: black
+        2, GoColor.white :: white
 
     Draws an invisible stone if empty
     TODO:
@@ -158,10 +159,6 @@ class Stone(QGraphicsObject):
         setLastmove()
         add lastmoveMarker to drawing
     """
-    # class constants
-    empty = 0
-    black = 1
-    white = 2
 
     # signal
     clicked = pyqtSignal()
@@ -186,13 +183,13 @@ class Stone(QGraphicsObject):
     def paint(self, painter, *args, **kwargs):
         """ draws the actual Stone"""
         painter.setBrush(Qt.SolidPattern)
-        if self.color == self.black:
+        if self.color == GoColor.black:
             self.setOpacity(1)
             painter.setBrush(QColor(5, 5, 5))
-        elif self.color == self.white:
+        elif self.color == GoColor.white:
             self.setOpacity(1)
             painter.setBrush(QColor(255, 255, 255))
-        elif self.color == self.empty:
+        elif self.color == GoColor.empty:
             if self.hover:
                 painter.setBrush(QColor(150, 150, 150))
                 self.setOpacity(0.4)

@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSignal
 
 from GoExceptions import IllegalMoveError
 from Game import Game
+from GoColor import GoColor
 from BoardGUI import BoardGUI
 
 
@@ -70,9 +71,9 @@ class MainWin(QMainWindow):
         status = ""
         status += "Move: " + str(self.game.moveCounter) + ". "
         playerStr = ""
-        if self.board.player == self.board.black:
+        if self.board.player == GoColor.black:
             playerStr = "Black"
-        elif self.board.player == self.board.white:
+        elif self.board.player == GoColor.white:
             playerStr = "White"
         status += playerStr + " to play."
         return status

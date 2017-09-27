@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 import Board
+from GoColor import GoColor
 import Player
 from copy import copy, deepcopy
 from GoExceptions import IllegalMoveError
@@ -138,11 +139,11 @@ class Game:
             checked.update(groupInfo["group"])
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
-            tempBoard.setPosition(x, y, tempBoard.empty)
+            tempBoard.setPosition(x, y, GoColor.empty)
             raise IllegalMoveError((x, y), "no liberties")
             return
         elif self.checkForKo(tempBoard):
-            tempBoard.setPosition(x, y, tempBoard.empty)
+            tempBoard.setPosition(x, y, GoColor.empty)
             raise IllegalMoveError((x, y), "Forbidden due to Ko rule")
             return
         else:
