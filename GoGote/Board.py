@@ -27,7 +27,7 @@ class Board:
     def __init__(self, size=19, player=GoColor.black,
                  capsBlack=0, capsWhite=0):
         # Initialize board matrix and other fields
-        self.postion = [[0]*size for _ in range(size)]
+        self.postion = [[GoColor.empty]*size for _ in range(size)]
         self.capsBlack = capsBlack
         self.capsWhite = capsWhite
         self.size = size
