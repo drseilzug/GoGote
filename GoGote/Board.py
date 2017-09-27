@@ -1,4 +1,7 @@
 #! /usr/bin/env python3
+from GoColor import GoColor
+
+
 class Board:
     """
     Objects of this class represent the state of the go board at
@@ -8,33 +11,27 @@ class Board:
         size: an integer representing the board size.
         position: an size x size matrix whose values represent the status of
                   the according position.
-                  Valid statuses:
-                    0 :: empty
-                    1 :: black
-                    2 :: white
-                    3 :: ko
+                  Valid statuses: (int :: enum)
+                    0 :: GoColor.empty
+                    1 :: GoColor.black
+                    2 :: GoColor.white
+                    3 :: GoColor.ko
         capsBlack: an integer representing the black stones captured
         capsWhite: an integer representing the white stones captured
         koStatus: boolean indecationg a position blocked by ko
         player: player to move
-            1 :: black
-            2 :: white
+            1 :: GoColor.black
+            2 :: GoColor.white
     """
 
-    # Aliases
-    empty = 0
-    black = 1
-    white = 2
-    ko = 3
-
-    def __init__(self, size=19, player=1,
+    def __init__(self, size=19, player=GoColor.black,
                  capsBlack=0, capsWhite=0):
         # Initialize board matrix and other fields
         self.postion = [[0]*size for _ in range(size)]
         self.capsBlack = capsBlack
         self.capsWhite = capsWhite
         self.size = size
-        self.koStatus = False
+        GoColor.koStatus = False
         self.player = player
 
     def __str__(self):
@@ -45,20 +42,20 @@ class Board:
         repr = ""
         for line in self.postion:
             for col in line:
-                if col == self.white:
+                if col == GoColor.white:
                     repr += "O"
-                elif col == self.black:
+                elif col == GoColor.black:
                     repr += "#"
             # feature removed until non stupid hash function TODO
-            #    elif col == self.ko:
+            #    elif col == GoColor.ko:
             #        repr += "*"
                 else:
                     repr += "."
             repr += "\n"
         repr += "\n"
-        if self.player == self.black:
+        if self.player == GoColor.black:
             repr += "black to play"
-        elif self.player == self.white:
+        elif self.player == GoColor.white:
             repr += "white to play"
         return repr
 
@@ -78,19 +75,19 @@ class Board:
         sets position (x, y) to status.
 
         legal inputs for status are:
-            empty: 0, "e", "empty", self.empty
-            black: 1, "b", "black", self.black
-            white: 2, "w", "white", self.white
-            ko:    3, "k", "ko",    self.ko
+            empty: 0, "e", "empty", GoColor.empty
+            black: 1, "b", "black", GoColor.black
+            white: 2, "w", "white", GoColor.white
+            ko:    3, "k", "ko",    GoColor.ko
         """
-        if status in (0, "e", "empty"):
-            self.postion[x][y] = self.empty
-        elif status in (1, "b", "black"):
-            self.postion[x][y] = self.black
-        elif status in (2, "w", "white"):
-            self.postion[x][y] = self.white
-        elif status in (3, "k", "ko"):
-            self.postion[x][y] = self.ko
+        if status in (0, "e", "empty", GoColor.empty):
+            self.postion[x][y] = GoColor.empty
+        elif status in (1, "b", "black", GoColor.black):
+            self.postion[x][y] = GoColor.black
+        elif status in (2, "w", "white", GoColor.white):
+            self.postion[x][y] = GoColor.white
+        elif status in (3, "k", "ko", GoColor.ko):
+            self.postion[x][y] = GoColor.ko
         else:
             raise ValueError('invalid argument for status')
 
@@ -102,7 +99,7 @@ class Board:
         """
         checks if (x, y) has no stones on it
         """
-        if self.postion[x][y] in [self.empty, self.ko]:
+        if self.postion[x][y] in [GoColor.empty, GoColor.ko]:
             return True
         else:
             return False
@@ -116,8 +113,8 @@ class Board:
         status2 = self.postion[x2][y2]
         # empy positions shall be considered friedly to each other, incl ko
         for status in [status1, status2]:
-            if status == self.ko:
-                status = self.empty
+            if status == GoColor.ko:
+                status = GoColor.empty
         if status1 == status2:
             return True
         else:
@@ -163,7 +160,7 @@ class Board:
         while len(stones) > 0:
             stone = stones.pop()
             (x, y) = stone
-            if self.postion[x][y] == self.black or self.white:
+            if self.postion[x][y] == GoColor.black or GoColor.white:
                 groupStatus = self.getGroupInfo(*stone)
                 legal = legal and groupStatus["libs"]
                 stones -= groupStatus["group"]
@@ -173,12 +170,12 @@ class Board:
         """
         removes stone (x, y) from board and updates captures accordingly
         """
-        if self.postion[x][y] == self.black:
+        if self.postion[x][y] == GoColor.black:
             self.capsBlack += 1
-            self.setPosition(x, y, self.empty)
-        elif self.postion[x][y] == self.white:
+            self.setPosition(x, y, GoColor.empty)
+        elif self.postion[x][y] == GoColor.white:
             self.capsWhite += 1
-            self.setPosition(x, y, self.empty)
+            self.setPosition(x, y, GoColor.empty)
         else:
             raise ValueError("cant kill nonexisting stone")
 
@@ -187,23 +184,23 @@ class Board:
         changes captured of color stones by integer n
 
         color:
-            black :: 1, "b", "black", self.black
-            white :: 2, "w", "white", self.white
+            black :: 1, GoColor.black
+            white :: 2, GoColor.white
         """
         # TODO imput error handeling
-        if color in (self.black, "b", "black"):
+        if color == GoColor.black:
             self.capsBlack += n
-        elif color in (self.white, "3", "white"):
+        elif color == GoColor.white:
             self.capsWhite += n
         else:
             raise ValueError("unknow color signature")
 
     def tooglePlayer(self):
         """toogels the player"""
-        if self.player == self.black:
-            self.player = self.white
-        elif self.player == self.white:
-            self.player = self.black
+        if self.player == GoColor.black:
+            self.player = GoColor.white
+        elif self.player == GoColor.white:
+            self.player = GoColor.black
 
     def boardHash(self):
         """
