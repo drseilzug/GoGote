@@ -158,4 +158,3 @@ if __name__ == "__main__":
     testgame = Game(player1, player2)
     testgame.playMove(1, 1)
     testgame.playMove(2, 3)
-    testgame.playMove(1, 6)
