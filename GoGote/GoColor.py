@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
-from enum import Enum
+from enum import IntEnum
 
 
-class GoColor(Enum):
+class GoColor(IntEnum):
     """
     Enums for the different statuses on the go board and playerColors
     empty, e :: 0
@@ -22,4 +22,4 @@ class GoColor(Enum):
 
 # Testing area
 if __name__ == "__main__":
-    pass
+    print(GoColor.black == 1)
