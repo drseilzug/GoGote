@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import enum
 
+
 class GoColor(enum):
     """
     Enums for the different statuses on the go board and playerColors
