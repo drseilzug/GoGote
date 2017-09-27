@@ -137,13 +137,33 @@ class InfoWidget(QWidget):
         self.initUI(game)
 
     def initUI(self, game):
-        testlabel = QLabel()
-        testlabel.setText("Placeholder")
-
         # Layout
-        hbox = QHBoxLayout()
-        hbox.addWidget(testlabel)
-        self.setLayout(hbox)
+
+        # table Head
+        hboxHead = QHBoxLayout()
+        hboxHead.addWidget(QLabel("Black"))
+        hboxHead.addSpacing(10)
+        hboxHead.addWidget(QLabel("White"))
+
+        # Player names and rank row
+        hboxPlayers = QHBoxLayout()
+        blackLabel = QLabel()
+        blackLabel.setText(game.playerBlack.name +
+                           " (" + game.playerBlack.rank + ")")
+        hboxPlayers.addWidget(blackLabel)
+        hboxPlayers.addSpacing(10)
+        whiteLabel = QLabel()
+        whiteLabel.setText(game.playerWhite.name +
+                           " (" + game.playerWhite.rank + ")")
+        hboxPlayers.addWidget(whiteLabel)
+
+        # Captures row
+
+        vbox = QVBoxLayout()  # Main Vertical Box Layout
+        vbox.addLayout(hboxHead)
+        vbox.addLayout(hboxPlayers)
+
+        self.setLayout(vbox)
 
 
 class ControleWidget(QWidget):
