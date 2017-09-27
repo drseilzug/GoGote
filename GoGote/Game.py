@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 import Board
 import Player
-from copy import copy
+from copy import copy, deepcopy
 from GoExceptions import IllegalMoveError
 
 
@@ -48,10 +48,7 @@ class Game:
         self.currentBoard = newBoard
         self.moveCounter += 1
         #  change player
-        if self.currentBoard.player == self.currentBoard.black:
-            self.currentBoard.player = self.currentBoard.white
-        elif self.currentBoard.player == self.currentBoard.white:
-            self.currentBoard.player = self.currentBoard.black
+        self.currentBoard.tooglePlayer()
         #  add new position to koHashTable
         self.addBoardToHash()
         #  TODO: here check for ko and update accordingly
@@ -66,28 +63,36 @@ class Game:
         Adds self.currentBoard to self.koHashTable
         """
         newHash = self.currentBoard.boardHash()
+        boardCopy = deepcopy(self.currentBoard)
         if newHash in self.koHashTable:
-            self.koHashTable[newHash].append(self.currentBoard)
+            self.koHashTable[newHash].append(boardCopy)
         else:
-            self.koHashTable[newHash] = [self.currentBoard]
+            self.koHashTable[newHash] = [boardCopy]
 
-    def checkForKo(self, board):
+    def checkForKo(self, board, otherPlayer=True):
         """
         checks if board is found in koHashTable
+        when otherPlayer == True it checks if the board is in the table for
+        the Player whos move it is not in board
         TODO: default value for board is self.currentBoard
         returns True if found; False otherwise
 
         TODO: implement toogle for KO/SUPERKO/no KO
         """
+        koStatus = False
+        if otherPlayer:
+            board.tooglePlayer()
         newHash = board.boardHash()
-        if newHash not in self.koHashTable:
-            return False
-        for koBoard in self.koHashTable[newHash]:
-            if koBoard.position == board.position \
-                    and koBoard.player == board.player:
-                return True
-            else:
-                return False
+        if newHash in self.koHashTable:
+            koStatus = True  # TODO temp solution because check below borked
+#            for koBoard in self.koHashTable[newHash]:
+#                if koBoard.position == board.position \
+#                        and koBoard.player == board.player:
+#                    koStatus = True
+        # toogle back player to set board back to initial state
+        if otherPlayer:
+            board.tooglePlayer()
+        return koStatus
 
     def passMove(self):
         """
@@ -150,11 +155,6 @@ if __name__ == "__main__":
     player1 = Player.Player("Max Mustermann", "10k")
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
-    testgame.playMove(0, 1)
-    testgame.playMove(0, 0)
-    testgame.playMove(1, 0)
-    testgame.playMove(0, 0)
-    testgame.playMove(0, 5)
-    testgame.passMove()
-    testgame.passMove()
-    print(testgame.currentBoard)
+    testgame.playMove(1, 1)
+    testgame.playMove(2, 3)
+    testgame.playMove(1, 6)
