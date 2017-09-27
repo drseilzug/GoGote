@@ -198,6 +198,13 @@ class Board:
         else:
             raise ValueError("unknow color signature")
 
+    def tooglePlayer(self):
+        """toogels the player"""
+        if self.player == self.black:
+            self.player = self.white
+        elif self.player == self.white:
+            self.player = self.black
+
     def boardHash(self):
         """
         returns a hash of the str rep ob the board.
