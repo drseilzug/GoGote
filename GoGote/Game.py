@@ -85,11 +85,10 @@ class Game:
             board.tooglePlayer()
         newHash = board.boardHash()
         if newHash in self.koHashTable:
-            koStatus = True  # TODO temp solution because check below borked
-#            for koBoard in self.koHashTable[newHash]:
-#                if koBoard.position == board.position \
-#                        and koBoard.player == board.player:
-#                    koStatus = True
+            for koBoard in self.koHashTable[newHash]:
+                if koBoard.position == board.position \
+                        and koBoard.player == board.player:
+                    koStatus = True
         # toogle back player to set board back to initial state
         if otherPlayer:
             board.tooglePlayer()

@@ -27,7 +27,7 @@ class Board:
     def __init__(self, size=19, player=GoColor.black,
                  capsBlack=0, capsWhite=0):
         # Initialize board matrix and other fields
-        self.postion = [[GoColor.empty]*size for _ in range(size)]
+        self.position = [[GoColor.empty]*size for _ in range(size)]
         self.capsBlack = capsBlack
         self.capsWhite = capsWhite
         self.size = size
@@ -40,7 +40,7 @@ class Board:
         TODO: represent last move (maybe italic or smth)
         """
         repr = ""
-        for line in self.postion:
+        for line in self.position:
             for col in line:
                 if col == GoColor.white:
                     repr += "O"
@@ -81,25 +81,25 @@ class Board:
             ko:    3, "k", "ko",    GoColor.ko
         """
         if status in (0, "e", "empty", GoColor.empty):
-            self.postion[x][y] = GoColor.empty
+            self.position[x][y] = GoColor.empty
         elif status in (1, "b", "black", GoColor.black):
-            self.postion[x][y] = GoColor.black
+            self.position[x][y] = GoColor.black
         elif status in (2, "w", "white", GoColor.white):
-            self.postion[x][y] = GoColor.white
+            self.position[x][y] = GoColor.white
         elif status in (3, "k", "ko", GoColor.ko):
-            self.postion[x][y] = GoColor.ko
+            self.position[x][y] = GoColor.ko
         else:
             raise ValueError('invalid argument for status')
 
     def getPosition(self, x, y):
         """Returns the status of stone at (x, y)"""
-        return self.postion[x][y]
+        return self.position[x][y]
 
     def isEmpty(self, x, y):
         """
         checks if (x, y) has no stones on it
         """
-        if self.postion[x][y] in [GoColor.empty, GoColor.ko]:
+        if self.position[x][y] in [GoColor.empty, GoColor.ko]:
             return True
         else:
             return False
@@ -109,8 +109,8 @@ class Board:
         Checks whether (x, y) and (x2, y2) are of the same
         faction.
         """
-        status1 = self.postion[x][y]
-        status2 = self.postion[x2][y2]
+        status1 = self.position[x][y]
+        status2 = self.position[x2][y2]
         # empy positions shall be considered friedly to each other, incl ko
         for status in [status1, status2]:
             if status == GoColor.ko:
@@ -160,7 +160,7 @@ class Board:
         while len(stones) > 0:
             stone = stones.pop()
             (x, y) = stone
-            if self.postion[x][y] == GoColor.black or GoColor.white:
+            if self.position[x][y] == GoColor.black or GoColor.white:
                 groupStatus = self.getGroupInfo(*stone)
                 legal = legal and groupStatus["libs"]
                 stones -= groupStatus["group"]
@@ -170,10 +170,10 @@ class Board:
         """
         removes stone (x, y) from board and updates captures accordingly
         """
-        if self.postion[x][y] == GoColor.white:
+        if self.position[x][y] == GoColor.white:
             self.capsBlack += 1
             self.setPosition(x, y, GoColor.empty)
-        elif self.postion[x][y] == GoColor.black:
+        elif self.position[x][y] == GoColor.black:
             self.capsWhite += 1
             self.setPosition(x, y, GoColor.empty)
         else:
@@ -228,11 +228,11 @@ if __name__ == "__main__":
     testspiel = Board(size=8)
 
     testspiel.setPosition(2, 4, "b")
-    testspiel.postion[1][4] = 1
-    testspiel.postion[3][5] = 1
-    testspiel.postion[3][4] = 1
-    testspiel.postion[6][6] = 2
-    testspiel.postion[7][6] = 2
+    testspiel.position[1][4] = 1
+    testspiel.position[3][5] = 1
+    testspiel.position[3][4] = 1
+    testspiel.position[6][6] = 2
+    testspiel.position[7][6] = 2
     testspiel.setPosition(1, 0, "b")
     testspiel.setPosition(0, 1, "b")
     testspiel.setPosition(0, 0, "w")

@@ -124,7 +124,7 @@ class GameWidget(QWidget):
         self.setLayout(hbox)
 
         # binding signals
-        self.updateSignal.connect(boardW.updatePostion)
+        self.updateSignal.connect(boardW.updatePosition)
         boardW.stoneClicked.connect(self.playSlot)
 
     def playSlot(self, pos):

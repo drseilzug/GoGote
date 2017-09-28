@@ -105,7 +105,7 @@ class BoardGUI(QWidget):
             self.scene.addEllipse(x-rad, y-rad, rad*2.0, rad*2.0,
                                   QPen(), QBrush(Qt.SolidPattern))
 
-    def updatePostion(self):
+    def updatePosition(self):
         """
         sets the colors for all stones in self.pos according
         to the status in self.board
@@ -129,7 +129,7 @@ class BoardGUI(QWidget):
                 newStone = Stone(x, y, radius)
                 self.pos[(row, col)] = newStone
                 self.scene.addItem(newStone)
-        self.updatePostion()
+        self.updatePosition()
         self.connecting()
 
     def connecting(self):
