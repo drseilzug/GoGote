@@ -30,19 +30,28 @@ class MainWin(QMainWindow):
         self.setWindowTitle('GoGote')
         self.setWindowIcon(QIcon('png/icon.png'))
 
-        # Initialize central Game Widget
-        newGame = Game()
-        gameW = GameWidget(self, newGame)
-        self.setCentralWidget(gameW)
+        # Initialize central Game Widget and make a new Game
+        initialGame = Game()
+        self.gameW = GameWidget(self, initialGame)
+        self.setCentralWidget(self.gameW)
         # self.statusB.showMessage(self.statusText())
 
-        # define Action to quit programm
+        # define Actions
         exitAct = QAction('&Exit', self)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit GoGote')
         exitAct.triggered.connect(qApp.quit)
 
-        # define other Actions
+        newGameAct = QAction('&New Game', self)
+        newGameAct.setShortcut('Ctrl+N')
+        newGameAct.setStatusTip('Start a new Game')
+        newGameAct.triggered.connect(self.makeNewGame)
+
+        closeGameAct = QAction('&Close Game', self)
+        closeGameAct.setShortcut('Ctrl+C')
+        closeGameAct.setStatusTip('Close current Game')
+        closeGameAct.triggered.connect(self.closeGame)
+
         viewCoordsAct = QAction('View Coordinates', self, checkable=True)
         viewCoordsAct.setChecked(True)
         viewCoordsAct.triggered.connect(self.toggleCoords)
@@ -50,6 +59,9 @@ class MainWin(QMainWindow):
         # create a menubar
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(newGameAct)
+        fileMenu.addAction(closeGameAct)
+        fileMenu.addSeparator()
         fileMenu.addAction(exitAct)
 
         viewMenu = menubar.addMenu('&View')
@@ -66,18 +78,16 @@ class MainWin(QMainWindow):
         else:
             self.statusB.hide()
 
-    def statusText(self):
-        """ generates statusbar Text"""
-        status = ""
-        status += "Move: " + str(self.game.moveCounter) + ". "
-        playerStr = ""
-        if self.board.player == GoColor.black:
-            playerStr = "Black"
-        elif self.board.player == GoColor.white:
-            playerStr = "White"
-        status += playerStr + " to play."
-        return status
+    def makeNewGame(self):
+        """Starts a new Game"""
+        newGame = Game()
+        self.closeGame()
+        self.gameW = GameWidget(self, newGame)
+        self.setCentralWidget(self.gameW)
 
+    def closeGame(self):
+        """closes the current Game"""
+        self.gameW.close()
 
 class GameWidget(QWidget):
     """
@@ -129,6 +139,19 @@ class GameWidget(QWidget):
         # DEBUG
         print(self.game.currentBoard)
 
+    def statusText(self):
+        """ generates statusbar Text"""
+        # TODO: implement this
+        status = ""
+        status += "Move: " + str(self.game.moveCounter) + ". "
+        playerStr = ""
+        if self.board.player == GoColor.black:
+            playerStr = "Black"
+        elif self.board.player == GoColor.white:
+            playerStr = "White"
+        status += playerStr + " to play."
+        return status
+
 
 class InfoWidget(QWidget):
     """ Widget desplays information on the game"""
@@ -142,9 +165,11 @@ class InfoWidget(QWidget):
 
         # table Head
         hboxHead = QHBoxLayout()
-        hboxHead.addWidget(QLabel("Black"))
+        self.blackHeadL = QLabel("Black")
+        hboxHead.addWidget(self.blackHeadL)
         hboxHead.addSpacing(10)
-        hboxHead.addWidget(QLabel("White"))
+        self.whiteHeadL = QLabel("White")
+        hboxHead.addWidget(self.whiteHeadL)
 
         # Player names and rank row
         hboxPlayers = QHBoxLayout()
@@ -174,13 +199,24 @@ class InfoWidget(QWidget):
 
         self.setLayout(vbox)
 
+        # initial update
+        self.updateSlot()
+
         # signals
         parent.updateSignal.connect(self.updateSlot)
 
     def updateSlot(self):
         """ slot that gets called to induce an update of the relevant data"""
+        # Capures update
         self.blackCapsL.setText("Caps: "+str(self.game.currentBoard.capsBlack))
         self.whiteCapsL.setText("Caps: "+str(self.game.currentBoard.capsWhite))
+        # player indication
+        if self.game.currentBoard.player == GoColor.black:
+            self.blackHeadL.setText("<b>Black</b>")
+            self.whiteHeadL.setText("White")
+        else:
+            self.blackHeadL.setText("Black")
+            self.whiteHeadL.setText("<b>White</b>")
 
 
 class ControleWidget(QWidget):
