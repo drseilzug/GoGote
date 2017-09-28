@@ -89,6 +89,7 @@ class MainWin(QMainWindow):
         """closes the current Game"""
         self.gameW.close()
 
+
 class GameWidget(QWidget):
     """
     A Widget that contains everything for a game
