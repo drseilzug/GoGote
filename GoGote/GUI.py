@@ -94,10 +94,10 @@ class GameWidget(QWidget):
 
     def initGame(self, game):
         self.game = game
-        self.board = self.game.currentBoard
+        # self.board = self.game.currentBoard
 
         # create child Widgets
-        boardW = BoardGUI(self, self.board)
+        boardW = BoardGUI(self, self.game)
         controleW = ControleWidget(self, self.game)
         infoW = InfoWidget(self, self.game)
 
@@ -134,9 +134,10 @@ class InfoWidget(QWidget):
     """ Widget desplays information on the game"""
     def __init__(self, parent, game):
         super().__init__()
-        self.initUI(game)
+        self.initUI(parent, game)
 
-    def initUI(self, game):
+    def initUI(self, parent, game):
+        self.game = game
         # Layout
 
         # table Head
@@ -158,12 +159,28 @@ class InfoWidget(QWidget):
         hboxPlayers.addWidget(whiteLabel)
 
         # Captures row
+        hboxCaps = QHBoxLayout()
+        self.blackCapsL = QLabel("Caps: "
+                                 + str(self.game.currentBoard.capsBlack))
+        self.whiteCapsL = QLabel("Caps: "
+                                 + str(self.game.currentBoard.capsWhite))
+        hboxCaps.addWidget(self.blackCapsL)
+        hboxCaps.addWidget(self.whiteCapsL)
 
         vbox = QVBoxLayout()  # Main Vertical Box Layout
         vbox.addLayout(hboxHead)
         vbox.addLayout(hboxPlayers)
+        vbox.addLayout(hboxCaps)
 
         self.setLayout(vbox)
+
+        # signals
+        parent.updateSignal.connect(self.updateSlot)
+
+    def updateSlot(self):
+        """ slot that gets called to induce an update of the relevant data"""
+        self.blackCapsL.setText("Caps: "+str(self.game.currentBoard.capsBlack))
+        self.whiteCapsL.setText("Caps: "+str(self.game.currentBoard.capsWhite))
 
 
 class ControleWidget(QWidget):

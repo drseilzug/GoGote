@@ -20,13 +20,14 @@ class BoardGUI(QWidget):
     # siganl
     stoneClicked = pyqtSignal(tuple)
 
-    def __init__(self, parent, board):
+    def __init__(self, parent, game):
         super().__init__()
 
-        self.initUI(board)
+        self.initUI(game)
 
-    def initUI(self, board):
-        self.board = board
+    def initUI(self, game):
+        self.board = game.currentBoard
+        self.game = game
 
         self.showCoords = False  # TODO
         self.scene = QGraphicsScene()
@@ -110,7 +111,7 @@ class BoardGUI(QWidget):
         to the status in self.board
         """
         for (x, y) in self.pos:
-            color = self.board.getPosition(x, y)
+            color = self.game.currentBoard.getPosition(x, y)
             self.pos[(x, y)].setColor(color)
 
     def createPosition(self):
@@ -229,7 +230,7 @@ if __name__ == "__main__":
 
     win = QMainWindow()
     win.setGeometry(100, 100, 800, 800)
-    board = BoardGUI(win, game.currentBoard)
+    board = BoardGUI(win, game)
     win.setCentralWidget(board)
 
     win.show()
