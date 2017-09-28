@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 import Board
-from GoColor import GoColor
+# from GoColor import GoColor
 import Player
-from copy import copy, deepcopy
+from copy import deepcopy
 from GoExceptions import IllegalMoveError
 
 
@@ -107,7 +107,7 @@ class Game:
         plays a move at (x, y)
         """
         #  create temp board
-        tempBoard = copy(self.currentBoard)
+        tempBoard = deepcopy(self.currentBoard)
         if not tempBoard.isEmpty(x, y):
             raise IllegalMoveError((x, y), "can only play on empty positions")
             return
@@ -139,11 +139,11 @@ class Game:
             checked.update(groupInfo["group"])
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
-            tempBoard.setPosition(x, y, GoColor.empty)
+            # tempBoard.setPosition(x, y, GoColor.empty)
             raise IllegalMoveError((x, y), "no liberties")
             return
         elif self.checkForKo(tempBoard):
-            tempBoard.setPosition(x, y, GoColor.empty)
+            # tempBoard.setPosition(x, y, GoColor.empty)
             raise IllegalMoveError((x, y), "Forbidden due to Ko rule")
             return
         else:
@@ -156,5 +156,8 @@ if __name__ == "__main__":
     player1 = Player.Player("Max Mustermann", "10k")
     player2 = Player.Player("Marta Musterfrau", "8k")
     testgame = Game(player1, player2)
-    testgame.playMove(1, 1)
+    testgame.playMove(0, 1)
+    testgame.playMove(0, 0)
+    testgame.playMove(1, 0)
     testgame.playMove(2, 3)
+    print(testgame.currentBoard.capsBlack)

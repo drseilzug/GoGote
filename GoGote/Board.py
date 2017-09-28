@@ -16,8 +16,8 @@ class Board:
                     1 :: GoColor.black
                     2 :: GoColor.white
                     3 :: GoColor.ko
-        capsBlack: an integer representing the black stones captured
-        capsWhite: an integer representing the white stones captured
+        capsBlack: an integer representing the stones captured by Black
+        capsWhite: an integer representing the stones captured by White
         koStatus: boolean indecationg a position blocked by ko
         player: player to move
             1 :: GoColor.black
@@ -170,10 +170,10 @@ class Board:
         """
         removes stone (x, y) from board and updates captures accordingly
         """
-        if self.postion[x][y] == GoColor.black:
+        if self.postion[x][y] == GoColor.white:
             self.capsBlack += 1
             self.setPosition(x, y, GoColor.empty)
-        elif self.postion[x][y] == GoColor.white:
+        elif self.postion[x][y] == GoColor.black:
             self.capsWhite += 1
             self.setPosition(x, y, GoColor.empty)
         else:
