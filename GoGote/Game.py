@@ -2,6 +2,7 @@
 import Board
 # from GoColor import GoColor
 import Player
+from sgfmill import sgf
 from copy import deepcopy
 from GoExceptions import IllegalMoveError
 
@@ -13,7 +14,7 @@ class Game:
         playerWhite:: a Player object containing Data on the white player
         currentBoard:: a Board object containing the current board statuses
         moveCounter:: an integer for the move count
-        gameHistory:: a dict containing the moves keyed by the moveCounter
+        sgf :: an sgf_game object to record and save the game
         koHashTable:: a dict with lists of boards that have occured
                         keyed by the board hashes
         consecutivePasses:: counts the number of consecutive passes
@@ -22,17 +23,21 @@ class Game:
     def __init__(self, playerBlack=Player.Player(),
                  playerWhite=Player.Player(), currentBoard=Board.Board(),
                  moveCounter=0,
-                 gameHistory={}, koHashTable={}):
+                 sgf=None, koHashTable={}):
         self.playerBlack = playerBlack
         self.playerWhite = playerWhite
         self.currentBoard = currentBoard
         self.moveCounter = moveCounter
-        self.gameHistory = gameHistory
         #  Initialize hash table and add starting position
         self.koHashTable = koHashTable
         self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
         #  consecutivePasses always 0 for new board
         self.consecutivePasses = 0
+
+        # create empty sgf_game on default
+        self.sgf = sgf
+        if sgf is None:
+            self.sgf = sgf.sgf_game()
 
     def nextMove(self, move, newBoard, passed=False):
         """
