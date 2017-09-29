@@ -108,6 +108,8 @@ class Board:
         """
         Checks whether (x, y) and (x2, y2) are of the same
         faction.
+
+        returns bool
         """
         status1 = self.position[x][y]
         status2 = self.position[x2][y2]
@@ -245,7 +247,6 @@ if __name__ == "__main__":
     testspiel.setPosition(1, 0, "b")
     testspiel.setPosition(0, 1, "b")
     testspiel.setPosition(0, 0, "w")
-    print(testspiel.getHashString())
     print("KILL")
     testspiel.killStone(0, 0)
     print(testspiel)
