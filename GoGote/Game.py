@@ -70,7 +70,7 @@ class Game:
         else:
             self.koHashTable[newHash] = [boardCopy]
 
-    def checkForKo(self, board, otherPlayer=True):
+    def checkForKo(self, board):
         """
         checks if board is found in koHashTable
         when otherPlayer == True it checks if the board is in the table for
@@ -81,17 +81,11 @@ class Game:
         TODO: implement toogle for KO/SUPERKO/no KO
         """
         koStatus = False
-        if otherPlayer:
-            board.tooglePlayer()
         newHash = board.boardHash()
         if newHash in self.koHashTable:
             for koBoard in self.koHashTable[newHash]:
-                if koBoard.position == board.position \
-                        and koBoard.player == board.player:
+                if koBoard.position == board.position:
                     koStatus = True
-        # toogle back player to set board back to initial state
-        if otherPlayer:
-            board.tooglePlayer()
         return koStatus
 
     def passMove(self):

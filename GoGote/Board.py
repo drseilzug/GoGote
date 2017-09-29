@@ -202,13 +202,6 @@ class Board:
         elif self.player == GoColor.white:
             self.player = GoColor.black
 
-    def boardHash(self):
-        """
-        returns a hash of the str rep ob the board.
-        until i know how to do it..... better....
-        """
-        return hash(str(self))
-
     def getHoshis(self):
         """
         returns a set of coordinates for the Hoshis depending on
@@ -222,10 +215,26 @@ class Board:
         elif self.size == 19:
             return set((a, b) for a in [3, 9, 15] for b in [3, 9, 15])
 
+    def boardHash(self):
+        test = ""
+        current = 1
+        counter = 1
+        for row in self.position:
+            for column in row:
+                current += column*counter
+                counter *= 4
+                if counter == 256:
+                    counter = 1
+                    test += chr(current)
+                    current = 1
+        if self.size*self.size % 4 != 0:
+            test += chr(current)
+        return hash(test)
+
 
 # Testing area
 if __name__ == "__main__":
-    testspiel = Board(size=8)
+    testspiel = Board(size=9)
 
     testspiel.setPosition(2, 4, "b")
     testspiel.position[1][4] = 1
@@ -236,9 +245,10 @@ if __name__ == "__main__":
     testspiel.setPosition(1, 0, "b")
     testspiel.setPosition(0, 1, "b")
     testspiel.setPosition(0, 0, "w")
-    print(testspiel)
+    print(testspiel.getHashString())
     print("KILL")
     testspiel.killStone(0, 0)
     print(testspiel)
     testspiel2 = Board()
     print(testspiel2.getHoshis())
+    print(hash("2"))
