@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 import Board
-# from GoColor import GoColor
+from GoColor import GoColor
 import Player
 from sgfmill import sgf
 from copy import deepcopy
@@ -23,7 +23,7 @@ class Game:
     def __init__(self, playerBlack=Player.Player(),
                  playerWhite=Player.Player(), currentBoard=Board.Board(),
                  moveCounter=0,
-                 sgf=None, koHashTable={}):
+                 sgfHist=None, koHashTable={}):
         self.playerBlack = playerBlack
         self.playerWhite = playerWhite
         self.currentBoard = currentBoard
@@ -31,25 +31,40 @@ class Game:
         #  Initialize hash table and add starting position
         self.koHashTable = koHashTable
         self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
-        #  consecutivePasses always 0 for new board
+        #  consecutivePa.extend_main_sequence()sses always 0 for new board
         self.consecutivePasses = 0
 
         # create empty sgf_game on default
-        self.sgf = sgf
-        if sgf is None:
-            self.sgf = sgf.sgf_game()
+        self.sgfHist = sgfHist
+        if sgfHist is None:
+            self.sgfHist = sgf.Sgf_game(self.currentBoard.size)
+
+    def addMoveSgf(self, move):
+        """adds move :: (int, int) to main variation of sgf"""
+        # invert row coordinate to fit sgfmill format
+        sgfMove = (self.currentBoard.size-1 - move[0], move[1])
+        print(sgfMove)
+        node = self.sgfHist.extend_main_sequence()
+        if self.currentBoard.player == GoColor.black:
+            node.set_move('b', sgfMove)
+        else:
+            node.set_move('w', sgfMove)
 
     def nextMove(self, move, newBoard, passed=False):
         """
+        move :: (int, int)
+        newBoard :: Board
+        passed :: bool
+
         increments the move
-        adds move to gameHistory
+        adds move to sgf
         adds hash to koHashTable
         changes current Player
         updated the currentBoard
         updates consecutivePasses counter
         """
-        #  update game and hash table
-        self.gameHistory[self.moveCounter] = move
+        #  update sgf
+        self.addMoveSgf(move)
         #  update board position and moveCounter
         self.currentBoard = newBoard
         self.moveCounter += 1
@@ -158,4 +173,4 @@ if __name__ == "__main__":
     testgame.playMove(0, 0)
     testgame.playMove(1, 0)
     testgame.playMove(2, 3)
-    print(testgame.currentBoard.capsBlack)
+    print(testgame.sgfHist)
