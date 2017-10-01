@@ -20,6 +20,12 @@ class GoColor(IntEnum):
     k = 3
 
 
+class GoMarks(IntEnum):
+    square = 0
+    circel = 1
+    cross = 2
+
+
 # Testing area
 if __name__ == "__main__":
     print(GoColor.black == 1)

@@ -59,6 +59,8 @@ class Game:
         self.moveCounter += 1
         #  change player
         self.currentBoard.tooglePlayer()
+        # set last move
+        self.currentBoard.setLastMove(*move)
         #  add new position to koHashTable
         self.addBoardToHash()
         #  TODO: here check for ko and update accordingly

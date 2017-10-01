@@ -18,7 +18,6 @@ class Board:
                     3 :: GoColor.ko
         capsBlack: an integer representing the stones captured by Black
         capsWhite: an integer representing the stones captured by White
-        koStatus: boolean indecationg a position blocked by ko
         player: player to move
             1 :: GoColor.black
             2 :: GoColor.white
@@ -31,8 +30,8 @@ class Board:
         self.capsBlack = capsBlack
         self.capsWhite = capsWhite
         self.size = size
-        GoColor.koStatus = False
         self.player = player
+        self.lastMove = None
 
     def __str__(self):
         """String representation of the board
@@ -69,6 +68,10 @@ class Board:
             if 0 <= x < self.size and 0 <= y < self.size:
                 neighbours.add((x, y))
         return neighbours
+
+    def setLastMove(self, x, y):
+        """ sets the Last Move field """
+        self.lastMove = (x, y)
 
     def setPosition(self, x, y, status):
         """
@@ -122,13 +125,16 @@ class Board:
         else:
             return False
 
-    def getGroupInfo(self, x, y):
+    def getGroupInfo(self, x, y, countMode=False):
         """
         returns information on the group at (x, y) as a dictonary
             "libs":boolean True if group has liberties
             "group":set contains coordiantes of stones belonging to group
                     only stones that were ckecked until liberty was found.
                     i.e. if libs == False stones contains whole group
+
+            if (x, y) is empty all connected empty fields will be returned
+            in the group field. (for counting)
         """
         toCheck = {(x, y)}
         checked = set()

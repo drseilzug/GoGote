@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject,
 from PyQt5.QtGui import QPen, QBrush, QColor  # ,QPainter
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal
 from Game import Game
-from GoColor import GoColor
+from GoColor import GoColor, GoMarks
 
 
 class BoardGUI(QWidget):
@@ -36,16 +36,17 @@ class BoardGUI(QWidget):
         self.grid = []
         self.drawGrid()
 
-        # stones for all positions are created and listed in self.pos dict
-        self.createPosition()
-
         # initialize and set layout + view
         self.view = QGraphicsView(self.scene)
         self.view.setMouseTracking(True)
+        self.view.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setMouseTracking(True)
         box = QHBoxLayout()
         box.addWidget(self.view)
         self.setLayout(box)
+
+        # stones for all positions are created and listed in self.pos dict
+        self.createPosition()
 
     def resizeEvent(self, e):
         self.view.fitInView(self.view.scene().sceneRect(), Qt.KeepAspectRatio)
@@ -112,7 +113,11 @@ class BoardGUI(QWidget):
         """
         for (x, y) in self.pos:
             color = self.game.currentBoard.getPosition(x, y)
+            self.pos[(x, y)].setMark(None)
             self.pos[(x, y)].setColor(color)
+        lastMove = self.game.currentBoard.lastMove
+        if lastMove:
+            self.pos[lastMove].setMark(GoMarks.circel)
 
     def createPosition(self):
         """
@@ -171,6 +176,7 @@ class Stone(QGraphicsObject):
         self.color = color
         self.setPos(x, y)
         self.hover = False
+        self.mark = None
 
         self.setAcceptHoverEvents(True)
         self.setAcceptedMouseButtons(Qt.LeftButton)
@@ -190,7 +196,9 @@ class Stone(QGraphicsObject):
         elif self.color == GoColor.white:
             self.setOpacity(1)
             painter.setBrush(QColor(255, 255, 255))
-        elif self.color == GoColor.empty:
+        elif self.color == GoColor.empty or self.color == GoColor.ko:
+            if self.color == GoColor.ko:
+                self.mark = GoMarks.square
             if self.hover:
                 painter.setBrush(QColor(150, 150, 150))
                 self.setOpacity(0.4)
@@ -198,8 +206,20 @@ class Stone(QGraphicsObject):
                 self.setOpacity(0.001)
         else:
             return
-
         painter.drawEllipse(self.boundingRect())
+        # draw Marker
+        if self.color == GoColor.black:
+            painter.setPen(QColor(200, 200, 200))
+        elif self.color == GoColor.white:
+            painter.setPen(QColor(0, 0, 0))
+        painter.setBrush(Qt.NoBrush)
+        if self.mark == GoMarks.circel:
+            painter.drawEllipse(-self.rad*0.6, -self.rad*0.6,
+                                1.2*self.rad, 1.2*self.rad)
+        if self.mark == GoMarks.square:
+            painter.drawRect(-self.rad/2, -self.rad/2, self.rad, self.rad)
+        else:
+            return
 
     def setColor(self, color):
         """Method that sets the stone to color"""
@@ -215,6 +235,10 @@ class Stone(QGraphicsObject):
 
     def mousePressEvent(self, e):
         self.clicked.emit()
+
+    def setMark(self, mark=None):
+        """ sets a stone marked flag """
+        self.mark = mark
 
 
 # Testing area
