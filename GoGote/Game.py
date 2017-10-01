@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 import Board
-# from GoColor import GoColor
+from GoColor import GoColor
 import Player
+from sgfmill import sgf
 from copy import deepcopy
 from GoExceptions import IllegalMoveError
 
@@ -13,7 +14,7 @@ class Game:
         playerWhite:: a Player object containing Data on the white player
         currentBoard:: a Board object containing the current board statuses
         moveCounter:: an integer for the move count
-        gameHistory:: a dict containing the moves keyed by the moveCounter
+        sgf :: an sgf_game object to record and save the game
         koHashTable:: a dict with lists of boards that have occured
                         keyed by the board hashes
         consecutivePasses:: counts the number of consecutive passes
@@ -22,29 +23,37 @@ class Game:
     def __init__(self, playerBlack=Player.Player(),
                  playerWhite=Player.Player(), currentBoard=Board.Board(),
                  moveCounter=0,
-                 gameHistory={}, koHashTable={}):
+                 sgfHist=None, koHashTable={}):
         self.playerBlack = playerBlack
         self.playerWhite = playerWhite
         self.currentBoard = currentBoard
         self.moveCounter = moveCounter
-        self.gameHistory = gameHistory
         #  Initialize hash table and add starting position
         self.koHashTable = koHashTable
         self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
-        #  consecutivePasses always 0 for new board
+        #  consecutivePa.extend_main_sequence()sses always 0 for new board
         self.consecutivePasses = 0
+
+        # create empty sgf_game on default
+        self.sgfHist = sgfHist
+        if sgfHist is None:
+            self.sgfHist = sgf.Sgf_game(self.currentBoard.size)
 
     def nextMove(self, move, newBoard, passed=False):
         """
+        move :: (int, int)
+        newBoard :: Board
+        passed :: bool
+
         increments the move
-        adds move to gameHistory
+        adds move to sgf
         adds hash to koHashTable
         changes current Player
         updated the currentBoard
         updates consecutivePasses counter
         """
-        #  update game and hash table
-        self.gameHistory[self.moveCounter] = move
+        #  update sgf
+        self.addMoveSgf(move)
         #  update board position and moveCounter
         self.currentBoard = newBoard
         self.moveCounter += 1
@@ -143,6 +152,22 @@ class Game:
             #  move gets played
             self.nextMove((x, y), tempBoard)
 
+    def addMoveSgf(self, move):
+        """adds move :: (int, int) to main variation of sgf"""
+        # invert row coordinate to fit sgfmill format
+        sgfMove = (self.currentBoard.size-1 - move[0], move[1])
+        print(sgfMove)
+        node = self.sgfHist.extend_main_sequence()
+        if self.currentBoard.player == GoColor.black:
+            node.set_move('b', sgfMove)
+        else:
+            node.set_move('w', sgfMove)
+
+    def saveSgf(self, pathname):
+        """ saves the sgf under pathname """
+        with open(pathname, "wb") as f:
+            f.write(self.sgfHist.serialise())
+
 
 # Testing area
 if __name__ == "__main__":
@@ -153,4 +178,4 @@ if __name__ == "__main__":
     testgame.playMove(0, 0)
     testgame.playMove(1, 0)
     testgame.playMove(2, 3)
-    print(testgame.currentBoard.capsBlack)
+    testgame.saveSgf("test.sgf")
