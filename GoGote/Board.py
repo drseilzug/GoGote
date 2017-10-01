@@ -211,11 +211,13 @@ class Board:
         TODO: all baord sizes
         """
         if self.size == 9:
-            return {(2, 2), (2, 5), (5, 2), (5, 5)}
+            return {(2, 2), (2, 6), (6, 2), (6, 6)}
         elif self.size == 13:
             return {(3, 3), (3, 9), (7, 7), (9, 3), (9, 9)}
         elif self.size == 19:
             return set((a, b) for a in [3, 9, 15] for b in [3, 9, 15])
+        else:
+            return set()
 
     def boardHash(self):
         test = ""
