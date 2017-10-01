@@ -164,7 +164,7 @@ class Stone(QGraphicsObject):
     # signal
     clicked = pyqtSignal()
 
-    def __init__(self, x, y, rad, color=0):
+    def __init__(self, x, y, rad, color=GoColor.empty):
         super().__init__()
 
         self.rad = rad

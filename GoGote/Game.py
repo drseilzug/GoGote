@@ -39,17 +39,6 @@ class Game:
         if sgfHist is None:
             self.sgfHist = sgf.Sgf_game(self.currentBoard.size)
 
-    def addMoveSgf(self, move):
-        """adds move :: (int, int) to main variation of sgf"""
-        # invert row coordinate to fit sgfmill format
-        sgfMove = (self.currentBoard.size-1 - move[0], move[1])
-        print(sgfMove)
-        node = self.sgfHist.extend_main_sequence()
-        if self.currentBoard.player == GoColor.black:
-            node.set_move('b', sgfMove)
-        else:
-            node.set_move('w', sgfMove)
-
     def nextMove(self, move, newBoard, passed=False):
         """
         move :: (int, int)
@@ -163,6 +152,22 @@ class Game:
             #  move gets played
             self.nextMove((x, y), tempBoard)
 
+    def addMoveSgf(self, move):
+        """adds move :: (int, int) to main variation of sgf"""
+        # invert row coordinate to fit sgfmill format
+        sgfMove = (self.currentBoard.size-1 - move[0], move[1])
+        print(sgfMove)
+        node = self.sgfHist.extend_main_sequence()
+        if self.currentBoard.player == GoColor.black:
+            node.set_move('b', sgfMove)
+        else:
+            node.set_move('w', sgfMove)
+
+    def saveSgf(self, pathname):
+        """ saves the sgf under pathname """
+        with open(pathname, "wb") as f:
+            f.write(self.sgfHist.serialise())
+
 
 # Testing area
 if __name__ == "__main__":
@@ -173,4 +178,4 @@ if __name__ == "__main__":
     testgame.playMove(0, 0)
     testgame.playMove(1, 0)
     testgame.playMove(2, 3)
-    print(testgame.sgfHist)
+    testgame.saveSgf("test.sgf")

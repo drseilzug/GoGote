@@ -2,7 +2,7 @@
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QAction, qApp,
                              QWidget, QPushButton, QHBoxLayout, QVBoxLayout,
-                             QLabel)
+                             QLabel, QFileDialog)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 # from PyQt5 import Qt
@@ -52,6 +52,11 @@ class MainWin(QMainWindow):
         closeGameAct.setStatusTip('Close current Game')
         closeGameAct.triggered.connect(self.closeGame)
 
+        saveSgfAct = QAction('&Save Game SGF', self)
+        saveSgfAct.setShortcut('Ctrl+S')
+        saveSgfAct.setStatusTip('Save current game as SGF.')
+        saveSgfAct.triggered.connect(self.saveFileDialog)
+
         viewCoordsAct = QAction('View Coordinates', self, checkable=True)
         viewCoordsAct.setChecked(True)
         viewCoordsAct.triggered.connect(self.toggleCoords)
@@ -61,6 +66,8 @@ class MainWin(QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(newGameAct)
         fileMenu.addAction(closeGameAct)
+        fileMenu.addSeparator()
+        fileMenu.addAction(saveSgfAct)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAct)
 
@@ -88,6 +95,17 @@ class MainWin(QMainWindow):
     def closeGame(self):
         """closes the current Game"""
         self.gameW.close()
+
+    def saveFileDialog(self):
+        saveDialog = QFileDialog()
+        saveDialog.setAcceptMode(QFileDialog.AcceptSave)
+        saveDialog.setFileMode(QFileDialog.AnyFile)
+        saveDialog.setDefaultSuffix('sgf')  # TODO this does not work
+        fileName, _ = saveDialog.getSaveFileName(
+                self, "Save Game SGF",
+                "", "Smart Game Files (*.sgf)",)
+        if fileName:
+            self.gameW.save(fileName)
 
 
 class GameWidget(QWidget):
@@ -152,6 +170,10 @@ class GameWidget(QWidget):
             playerStr = "White"
         status += playerStr + " to play."
         return status
+
+    def save(self, pathname):
+        """ saves the current game as an sgf """
+        self.game.saveSgf(pathname)
 
 
 class InfoWidget(QWidget):
