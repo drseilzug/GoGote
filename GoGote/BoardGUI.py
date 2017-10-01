@@ -10,7 +10,7 @@ from GoColor import GoColor
 
 
 class BoardGUI(QWidget):
-    """cointain the grafical representation of the Board"""
+    """cointain the graphical representation of the Board"""
 
     # ratio of bordersize compared to the size of one base square
     borderRatio = 0.8

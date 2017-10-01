@@ -9,12 +9,14 @@ from PyQt5.QtCore import pyqtSignal
 
 from GoExceptions import IllegalMoveError
 from Game import Game
+from Board import Board
+from Player import Player
 from GoColor import GoColor
 from BoardGUI import BoardGUI
+from GUIDialogs import NewGameDialog
 
 
 class MainWin(QMainWindow):
-
     def __init__(self):
         super().__init__()
 
@@ -45,7 +47,7 @@ class MainWin(QMainWindow):
         newGameAct = QAction('&New Game', self)
         newGameAct.setShortcut('Ctrl+N')
         newGameAct.setStatusTip('Start a new Game')
-        newGameAct.triggered.connect(self.makeNewGame)
+        newGameAct.triggered.connect(self.newGameD)
 
         closeGameAct = QAction('&Close Game', self)
         closeGameAct.setShortcut('Ctrl+C')
@@ -85,13 +87,6 @@ class MainWin(QMainWindow):
         else:
             self.statusB.hide()
 
-    def makeNewGame(self):
-        """Starts a new Game"""
-        newGame = Game()
-        self.closeGame()
-        self.gameW = GameWidget(self, newGame)
-        self.setCentralWidget(self.gameW)
-
     def closeGame(self):
         """closes the current Game"""
         self.gameW.close()
@@ -106,6 +101,20 @@ class MainWin(QMainWindow):
                 "", "Smart Game Files (*.sgf)",)
         if fileName:
             self.gameW.save(fileName)
+
+    def makeNewGame(self, size=19, playerB=Player(), playerW=Player()):
+        """Starts a new Game"""
+        print(size)
+        newGame = Game(playerB, playerW, Board(size))
+        self.closeGame()
+        self.gameW = GameWidget(self, newGame)
+        self.setCentralWidget(self.gameW)
+
+    def newGameD(self):
+        """ opens a NewGameDialog """
+        newGame = NewGameDialog()
+        newGame.createGame.connect(self.makeNewGame)
+        newGame.exec_()
 
 
 class GameWidget(QWidget):
