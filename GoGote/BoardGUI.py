@@ -12,7 +12,7 @@ from GoColor import GoColor
 class BoardGUI(QWidget):
     """cointain the grafical representation of the Board"""
 
-    # ratio of boardersize compared to the size of one base square
+    # ratio of bordersize compared to the size of one base square
     borderRatio = 0.8
     baseRectRatio = 14/15  # 12/13 for normal ratio but looks weird
     stoneScale = 0.46
