@@ -4,7 +4,7 @@ from GoColor import GoColor
 import Player
 from sgfmill import sgf
 from copy import deepcopy
-from GoExceptions import IllegalMoveError
+from GoExceptions import IllegalMoveError, KoError
 
 
 class Game:
@@ -28,6 +28,7 @@ class Game:
         self.playerWhite = playerWhite
         self.currentBoard = currentBoard
         self.moveCounter = moveCounter
+        self.setKo = None
         #  Initialize hash table and add starting position
         self.koHashTable = koHashTable
         self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
@@ -63,7 +64,15 @@ class Game:
         self.currentBoard.setLastMove(*move)
         #  add new position to koHashTable
         self.addBoardToHash()
-        #  TODO: here check for ko and update accordingly
+        # check for ko blocked
+        if self.setKo:
+            if self.koBlockTest(self.setKo):
+                self.currentBoard.ko = self.setKo
+            else:
+                self.currentBoard.ko = None
+            self.setKo = None
+        else:
+            self.currentBoard.ko = None
         #  update/reset passing counter
         if passed:
             self.consecutivePasses += 1
@@ -99,12 +108,35 @@ class Game:
                     koStatus = True
         return koStatus
 
+    def koBlockTest(self, potKoMove):
+        """
+        checks if potKoMove is blocked to play on board due to ko
+        and marks it accordingly.
+        """
+        if not self.currentBoard.isEmpty(*potKoMove):
+            return False
+        noKo = False
+        self.currentBoard.setPosition(*potKoMove, self.currentBoard.player)
+        for stone in self.currentBoard.getNeighbours(*potKoMove):
+            noKo = noKo or self.currentBoard.isFriend(*stone, *potKoMove)
+            noKo = noKo or self.currentBoard.isEmpty(*stone)
+        self.currentBoard.setPosition(*potKoMove, GoColor.empty)
+        return not noKo
+
+        # tempGame = deepcopy(self)
+        # try:
+        #     tempGame.playMove(potKoMove)
+        # except(KoError):
+        #     return True
+        # except(IllegalMoveError):
+        #     return False
+        # return False
+
     def passMove(self):
         """
         passing
         """
         self.nextMove(None, self.currentBoard, True)
-        #  TODO: remove Ko block maybe? (prob not)
 
     def playMove(self, x, y):
         """
@@ -112,6 +144,7 @@ class Game:
         """
         #  create temp board
         tempBoard = deepcopy(self.currentBoard)
+        kills = set()
         if not tempBoard.isEmpty(x, y):
             raise IllegalMoveError((x, y), "can only play on empty positions")
             return
@@ -140,6 +173,7 @@ class Game:
             if not groupInfo["libs"]:
                 for stone in groupInfo["group"]:
                     tempBoard.killStone(*stone)
+                    kills.add(stone)
             checked.update(groupInfo["group"])
         #  check if played stone has liberties
         if not tempBoard.getGroupInfo(x, y)["libs"]:
@@ -148,9 +182,12 @@ class Game:
             return
         elif self.checkForKo(tempBoard):
             # tempBoard.setPosition(x, y, GoColor.empty)
-            raise IllegalMoveError((x, y), "Forbidden due to Ko rule")
+            raise KoError((x, y), "Forbidden due to Ko rule")
             return
         else:
+            # check for potential ko
+            if len(kills) == 1:
+                self.setKo = kills.pop()
             #  move gets played
             self.nextMove((x, y), tempBoard)
 

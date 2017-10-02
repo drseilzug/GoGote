@@ -50,7 +50,6 @@ class BoardGUI(QWidget):
 
     def resizeEvent(self, e):
         self.view.fitInView(self.view.scene().sceneRect(), Qt.KeepAspectRatio)
-        # TODO: self.drawGrid()
 
     def boardWidth(self):
         """returns the max width fitting into widget"""
@@ -118,6 +117,9 @@ class BoardGUI(QWidget):
         lastMove = self.game.currentBoard.lastMove
         if lastMove:
             self.pos[lastMove].setMark(GoMarks.circel)
+        ko = self.game.currentBoard.ko
+        if ko:
+            self.pos[ko].setMark(GoMarks.square)
 
     def createPosition(self):
         """
@@ -160,10 +162,6 @@ class Stone(QGraphicsObject):
         2, GoColor.white :: white
 
     Draws an invisible stone if empty
-    TODO:
-        lastMove Property --> bool
-        setLastmove()
-        add lastmoveMarker to drawing
     """
 
     # signal
@@ -197,8 +195,6 @@ class Stone(QGraphicsObject):
             self.setOpacity(1)
             painter.setBrush(QColor(255, 255, 255))
         elif self.color == GoColor.empty or self.color == GoColor.ko:
-            if self.color == GoColor.ko:
-                self.mark = GoMarks.square
             if self.hover:
                 painter.setBrush(QColor(150, 150, 150))
                 self.setOpacity(0.4)
@@ -206,7 +202,9 @@ class Stone(QGraphicsObject):
                 self.setOpacity(0.001)
         else:
             return
-        painter.drawEllipse(self.boundingRect())
+        if self.mark != GoMarks.square:
+            painter.drawEllipse(self.boundingRect())
+
         # draw Marker
         if self.color == GoColor.black:
             painter.setPen(QColor(200, 200, 200))
@@ -214,10 +212,12 @@ class Stone(QGraphicsObject):
             painter.setPen(QColor(0, 0, 0))
         painter.setBrush(Qt.NoBrush)
         if self.mark == GoMarks.circel:
-            painter.drawEllipse(-self.rad*0.6, -self.rad*0.6,
-                                1.2*self.rad, 1.2*self.rad)
+            painter.drawEllipse(-self.rad*0.65, -self.rad*0.65,
+                                1.3*self.rad, 1.3*self.rad)
         if self.mark == GoMarks.square:
-            painter.drawRect(-self.rad/2, -self.rad/2, self.rad, self.rad)
+            self.setOpacity(1)
+            painter.drawRect(-self.rad*0.6, -self.rad*0.6,
+                             self.rad*1.2, self.rad*1.2)
         else:
             return
 

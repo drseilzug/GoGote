@@ -21,3 +21,9 @@ class IllegalMoveError(GoExceptions):
     def __init__(self, move, message):
         self.move = move
         self.message = message
+
+
+class KoError(GoExceptions):
+    def __init__(self, move, message):
+        self.move = move
+        self.message = message

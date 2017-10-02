@@ -15,12 +15,13 @@ class Board:
                     0 :: GoColor.empty
                     1 :: GoColor.black
                     2 :: GoColor.white
-                    3 :: GoColor.ko
+                    3 :: GoColor.ko (unused)
         capsBlack: an integer representing the stones captured by Black
         capsWhite: an integer representing the stones captured by White
         player: player to move
             1 :: GoColor.black
             2 :: GoColor.white
+        ko: (int, int) if a move should be marked for ko, None otherwise
     """
 
     def __init__(self, size=19, player=GoColor.black,
@@ -32,6 +33,7 @@ class Board:
         self.size = size
         self.player = player
         self.lastMove = None
+        self.ko = None
 
     def __str__(self):
         """String representation of the board
@@ -45,9 +47,6 @@ class Board:
                     repr += "O"
                 elif col == GoColor.black:
                     repr += "#"
-            # feature removed until non stupid hash function TODO
-            #    elif col == GoColor.ko:
-            #        repr += "*"
                 else:
                     repr += "."
             repr += "\n"

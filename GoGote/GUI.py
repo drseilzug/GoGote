@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 # from PyQt5 import Qt
 
-from GoExceptions import IllegalMoveError
+from GoExceptions import IllegalMoveError, KoError
 from Game import Game
 from Board import Board
 from Player import Player
@@ -163,9 +163,11 @@ class GameWidget(QWidget):
             self.game.playMove(*pos)
         except(IllegalMoveError):
             print("Illegal Move")
+        except(KoError):
+            print('Ko!')
         self.updateSignal.emit()
         # DEBUG
-        print(self.game.currentBoard)
+        # print(self.game.currentBoard)
 
     def statusText(self):
         """ generates statusbar Text"""
