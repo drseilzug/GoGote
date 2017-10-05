@@ -101,7 +101,7 @@ class Board:
         """
         checks if (x, y) has no stones on it
         """
-        if self.position[x][y] in [GoColor.empty, GoColor.ko]:
+        if self.getPosition(x, y) in [GoColor.empty, GoColor.ko]:
             return True
         else:
             return False
@@ -113,8 +113,8 @@ class Board:
 
         returns bool
         """
-        status1 = self.position[x][y]
-        status2 = self.position[x2][y2]
+        status1 = self.getPosition(x, y)
+        status2 = self.getPosition(x2, y2)
         # empy positions shall be considered friedly to each other, incl ko
         for status in [status1, status2]:
             if status == GoColor.ko:
@@ -167,7 +167,7 @@ class Board:
         while len(stones) > 0:
             stone = stones.pop()
             (x, y) = stone
-            if self.position[x][y] == GoColor.black or GoColor.white:
+            if self.getPosition(x, y) in [GoColor.black, GoColor.white]:
                 groupStatus = self.getGroupInfo(*stone)
                 legal = legal and groupStatus["libs"]
                 stones -= groupStatus["group"]
@@ -177,10 +177,10 @@ class Board:
         """
         removes stone (x, y) from board and updates captures accordingly
         """
-        if self.position[x][y] == GoColor.white:
+        if self.getPosition(x, y) == GoColor.white:
             self.capsBlack += 1
             self.setPosition(x, y, GoColor.empty)
-        elif self.position[x][y] == GoColor.black:
+        elif self.getPosition(x, y) == GoColor.black:
             self.capsWhite += 1
             self.setPosition(x, y, GoColor.empty)
         else:
