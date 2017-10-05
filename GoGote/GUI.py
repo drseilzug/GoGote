@@ -61,7 +61,7 @@ class MainWin(QMainWindow):
 
         viewCoordsAct = QAction('View Coordinates', self, checkable=True)
         viewCoordsAct.setChecked(True)
-        viewCoordsAct.triggered.connect(self.toggleCoords)
+        viewCoordsAct.triggered.connect(self.gameW.toggleCoords)
 
         # create a menubar
         menubar = self.menuBar()
@@ -76,16 +76,6 @@ class MainWin(QMainWindow):
         viewMenu = menubar.addMenu('&View')
         viewMenu.setStatusTip('Viewmenu')
         viewMenu.addAction(viewCoordsAct)
-
-    def toggleCoords(self, state):
-        """
-        toogles showing coordinates
-        """
-        # TODO implement coordinates. atm shows/hides statusbar for testing
-        if state:
-            self.statusB.show()
-        else:
-            self.statusB.hide()
 
     def closeGame(self):
         """closes the current Game"""
@@ -135,13 +125,13 @@ class GameWidget(QWidget):
         # self.board = self.game.currentBoard
 
         # create child Widgets
-        boardW = BoardGUI(self, self.game)
+        self.boardW = BoardGUI(self, self.game)
         controleW = ControleWidget(self, self.game)
         infoW = InfoWidget(self, self.game)
 
         # create Layout
         hbox = QHBoxLayout()
-        hbox.addWidget(boardW, stretch=1)
+        hbox.addWidget(self.boardW, stretch=1)
 
         vbox = QVBoxLayout()
         vbox.addWidget(infoW)
@@ -151,8 +141,8 @@ class GameWidget(QWidget):
         self.setLayout(hbox)
 
         # binding signals
-        self.updateSignal.connect(boardW.updatePosition)
-        boardW.stoneClicked.connect(self.playSlot)
+        self.updateSignal.connect(self.boardW.updatePosition)
+        self.boardW.stoneClicked.connect(self.playSlot)
 
     def playSlot(self, pos):
         """
@@ -181,6 +171,12 @@ class GameWidget(QWidget):
             playerStr = "White"
         status += playerStr + " to play."
         return status
+
+    def toggleCoords(self, state):
+        """
+        toogles showing coordinates
+        """
+        self.boardW.setCoordVis(state)
 
     def save(self, pathname):
         """ saves the current game as an sgf """

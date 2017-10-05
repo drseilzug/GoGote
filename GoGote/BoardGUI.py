@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 import sys
 
-from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject,
-                             QApplication, QWidget, QGraphicsView, QHBoxLayout)
+from PyQt5.QtWidgets import (QGraphicsScene, QGraphicsObject, QGraphicsItemGroup,
+                             QApplication, QWidget, QGraphicsView, QHBoxLayout,
+                             QGraphicsSimpleTextItem)
 from PyQt5.QtGui import QPen, QBrush, QColor  # ,QPainter
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal
 from Game import Game
@@ -29,7 +30,7 @@ class BoardGUI(QWidget):
         self.board = game.currentBoard
         self.game = game
 
-        self.showCoords = False  # TODO
+        self.showCoords = True
         self.scene = QGraphicsScene()
 
         # grid containing coordinates for the scene
@@ -47,6 +48,7 @@ class BoardGUI(QWidget):
 
         # stones for all positions are created and listed in self.pos dict
         self.createPosition()
+        self.makeCoords()  # has to be called after drawGrid!
 
     def resizeEvent(self, e):
         self.view.fitInView(self.view.scene().sceneRect(), Qt.KeepAspectRatio)
@@ -73,7 +75,7 @@ class BoardGUI(QWidget):
         baseWidth = self.boardWidth() / denom
         baseHeight = self.boardHeight() / denom
 
-        leftOffset = 0  # (self.contentsRect().width()-self.boardWidth())/2
+        leftOffset = 0.5*baseWidth  # (self.contentsRect().width()-self.boardWidth())/2
         topOffset = 0  # (self.contentsRect().height()-self.boardHeight())/2
 
         partionWidth = [leftOffset+(self.borderRatio+x)*baseWidth
@@ -93,6 +95,45 @@ class BoardGUI(QWidget):
         for (pointT, pointB) in zip(self.grid[0], self.grid[-1]):
             self.scene.addLine(*pointT, *pointB)
         self.drawHoshis()
+
+    def makeCoords(self):
+        """ draws Coordinates """
+        xLabels = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+        yLabels = list(range(1, 26))
+        botGrid = []
+        leftGrid = []
+        # generate pixel coordinates grids
+        for n in range(self.board.size):
+            (xBot, yBot) = self.grid[self.board.size-1][n]
+            yBot += self.baseWidth*0.4/self.baseRectRatio
+            xBot -= self.baseWidth*0.1
+            botGrid.append((xBot, yBot))
+            (xLeft, yLeft) = self.grid[n][0]
+            xLeft -= self.baseWidth*1.2
+            yLeft -= self.baseWidth*0.3/self.baseRectRatio
+            leftGrid.append((xLeft, yLeft))
+        # generate Text items and add them to group
+        self.coordGroup = QGraphicsItemGroup()
+        for n in range(self.board.size):
+            leftText = QGraphicsSimpleTextItem(str(yLabels[n]))
+            leftText.setPos(*leftGrid[n])
+            self.coordGroup.addToGroup(leftText)
+            bottomText = QGraphicsSimpleTextItem(xLabels[n])
+            bottomText.setPos(*botGrid[n])
+            self.coordGroup.addToGroup(bottomText)
+        # draw coordinates and update visibility according to self.showCoords
+        self.updateCoords()
+
+    def updateCoords(self):
+        """ slot that updates the visibility os the coordiantes"""
+        self.scene.addItem(self.coordGroup)
+        # set visibility according the showCoords bool
+        self.coordGroup.setVisible(self.showCoords)
+
+    def setCoordVis(self, visibility):
+        """ set the self.showCoords boolean """
+        self.showCoords = visibility
+        self.updateCoords()
 
     def drawHoshis(self):
         """ Draws Hoshi dots"""
@@ -256,6 +297,7 @@ if __name__ == "__main__":
     win.setGeometry(100, 100, 800, 800)
     board = BoardGUI(win, game)
     win.setCentralWidget(board)
+    board.setCoordVis(True)
 
     win.show()
     sys.exit(app.exec_())
