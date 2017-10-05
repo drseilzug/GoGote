@@ -195,7 +195,6 @@ class Game:
         """adds move :: (int, int) to main variation of sgf"""
         # invert row coordinate to fit sgfmill format
         sgfMove = (self.currentBoard.size-1 - move[0], move[1])
-        print(sgfMove)
         node = self.sgfHist.extend_main_sequence()
         if self.currentBoard.player == GoColor.black:
             node.set_move('b', sgfMove)
