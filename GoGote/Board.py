@@ -224,6 +224,67 @@ class Board:
         else:
             return set()
 
+    def setHC(self, n):
+        """
+        sets Handicap stones
+        atm only supports boardsize 9, 13, 19
+        9 :: 2<=n<=4
+        13:: 2<=n<=5
+        19:: 2<=n<=9
+
+        other values will not place any HC stones at all.
+
+        also sets the player to white
+        """
+        stones = set()
+        if n < 2:
+            return
+        if self.size == 19:
+            if n == 2:
+                stones = {(3, 15), (15, 3)}
+            elif n == 3:
+                stones = {(3, 15), (15, 3), (15, 15)}
+            elif n == 4:
+                stones = {(3, 3), (3, 15), (15, 3), (15, 15)}
+            elif n == 5:
+                stones = {(3, 3), (9, 9), (3, 15), (15, 3), (15, 15)}
+            elif n == 6:
+                stones = {(3, 3), (3, 9), (3, 15), (15, 3), (15, 9), (15, 15)}
+            elif n == 7:
+                stones = {(3, 3), (3, 9), (3, 15), (9, 9),
+                          (15, 3), (15, 9), (15, 15)}
+            elif n == 8:
+                stones = {(3, 3), (3, 9), (3, 15), (9, 3), (9, 15),
+                          (15, 3), (15, 9), (15, 15)}
+            elif n == 9:
+                stones = {(3, 3), (3, 9), (3, 15), (9, 3), (9, 9), (9, 15),
+                          (15, 3), (15, 9), (15, 15)}
+            else:
+                return
+        elif self.size == 13:
+            if n == 2:
+                stones = {(3, 9), (9, 3)}
+            elif n == 3:
+                stones = {(3, 9), (9, 3), (9, 9)}
+            elif n == 4:
+                stones = {(3, 3), (3, 9), (9, 3), (9, 9)}
+            elif n == 5:
+                stones = {(3, 3), (3, 9), (7, 7), (9, 3), (9, 9)}
+            else:
+                return
+        elif self.size == 9:
+            if n == 2:
+                stones = {(2, 6), (6, 2)}
+            if n == 3:
+                stones = {(2, 6), (6, 2), (6, 6)}
+            if n == 4:
+                stones = {(2, 2), (2, 6), (6, 2), (6, 6)}
+        else:
+            return
+        for stone in stones:
+            self.setPosition(*stone, GoColor.black)
+        self.player = GoColor.white
+
     def boardHash(self):
         test = ""
         current = 1
