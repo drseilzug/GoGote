@@ -92,10 +92,10 @@ class MainWin(QMainWindow):
         if fileName:
             self.gameW.save(fileName)
 
-    def makeNewGame(self, size=19, playerB=Player(), playerW=Player()):
+    def makeNewGame(self, size=19, playerB=Player(), playerW=Player(), hc=0):
         """Starts a new Game"""
-        print(size)
         newGame = Game(playerB, playerW, Board(size))
+        newGame.currentBoard.setHC(hc)
         self.closeGame()
         self.gameW = GameWidget(self, newGame)
         self.setCentralWidget(self.gameW)

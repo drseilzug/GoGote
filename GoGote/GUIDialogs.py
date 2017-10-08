@@ -1,13 +1,15 @@
 #! /usr/bin/env python3
 from PyQt5.QtWidgets import (QDialog, QPushButton, QLineEdit, QHBoxLayout,
-                             QVBoxLayout, QSpinBox, QComboBox, QLabel)
+                             QVBoxLayout, QSpinBox, QComboBox, QLabel, QCheckBox)
 from PyQt5.QtCore import pyqtSignal
 from Player import Player
 
 
 class NewGameDialog(QDialog):
     """ dialog for creating a new game """
-    createGame = pyqtSignal(int, Player, Player)
+    # Signals
+    createGame = pyqtSignal(int, Player, Player, int)
+    setHC = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -40,6 +42,13 @@ class NewGameDialog(QDialog):
         sizeBox.setValue(19)
         sizeBox.valueChanged.connect(self.setSize)
 
+        # handycap settings:
+        self.checkHC = QCheckBox()
+        self.chooseHC = QSpinBox()
+        self.chooseHC.setRange(2, 9)
+        self.chooseHC.setEnabled(False)
+        self.checkHC.toggled.connect(self.chooseHC.setEnabled)
+
         # rank boxes
         ranks = ['?']
         for kyu in range(20, 0, -1):
@@ -65,7 +74,13 @@ class NewGameDialog(QDialog):
         vboxL.addWidget(QLabel("Board Size"))
         vboxR.addWidget(sizeBox)
 
-        vboxL.addWidget(QLabel("Black Player Name: "))
+        vboxL.addWidget(QLabel("Handycap Stones:"))
+        hcBox = QHBoxLayout()
+        hcBox.addWidget(self.checkHC)
+        hcBox.addWidget(self.chooseHC)
+        vboxR.addLayout(hcBox)
+
+        vboxL.addWidget(QLabel("Black Player Name:"))
         vboxR.addWidget(nameBField)
 
         vboxL.addWidget(QLabel("Black Player Rank:"))
@@ -82,6 +97,18 @@ class NewGameDialog(QDialog):
 
     def setSize(self, size):
         self.size = size
+        # for valid sizes activate HC settings and set max HC values accordingly
+        if size in [9, 13, 19]:
+            self.checkHC.setEnabled(True)
+            if size == 9:
+                self.chooseHC.setMaximum(4)
+            elif size == 13:
+                self.chooseHC.setMaximum(5)
+            elif size == 19:
+                self.chooseHC.setMaximum(9)
+        else:
+            self.checkHC.setEnabled(False)
+            self.checkHC.setChecked(False)
 
     def setBlackName(self, string):
         self.playerB.set_name(string)
@@ -96,7 +123,10 @@ class NewGameDialog(QDialog):
         self.playerB.set_rank(string)
 
     def okSlot(self):
-        self.createGame.emit(self.size, self.playerB, self.playerW)
+        hc = 0
+        if self.chooseHC.isEnabled():
+            hc = self.chooseHC.value()
+        self.createGame.emit(self.size, self.playerB, self.playerW, hc)
 
 
 # Testing area
