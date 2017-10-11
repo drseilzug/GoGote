@@ -122,12 +122,11 @@ class BoardGUI(QWidget):
             bottomText.setPos(*botGrid[n])
             self.coordGroup.addToGroup(bottomText)
         # draw coordinates and update visibility according to self.showCoords
+        self.scene.addItem(self.coordGroup)
         self.updateCoords()
 
     def updateCoords(self):
-        """ slot that updates the visibility os the coordiantes"""
-        self.scene.addItem(self.coordGroup)
-        # set visibility according the showCoords bool
+        """ slot that updates the visibility os the coordiantes. """
         self.coordGroup.setVisible(self.showCoords)
 
     def setCoordVis(self, visibility):
