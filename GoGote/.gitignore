@@ -1,4 +1,4 @@
 *.sgf
 /__pycache__
 /GUI_cr
-test.py
+test*
