@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 from GoColor import GoColor
+import zlib
 
 
 class Board:
@@ -290,16 +291,17 @@ class Board:
         current = 1
         counter = 1
         for row in self.position:
-            for column in row:
-                current += column*counter
+            for elem in row:
+                current += elem*counter
                 counter *= 4
                 if counter == 256:
                     counter = 1
                     test += chr(current)
                     current = 1
-        if self.size*self.size % 4 != 0:
+        if self.size**2 % 4 != 0:
             test += chr(current)
-        return hash(test)
+            encoded = test.encode()
+        return zlib.adler32(encoded)
 
 
 # Testing area
