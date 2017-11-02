@@ -32,7 +32,7 @@ class Game:
         #  Initialize hash table and add starting position
         self.koHashTable = koHashTable
         self.koHashTable[self.currentBoard.boardHash()] = [self.currentBoard]
-        #  consecutivePa.extend_main_sequence()sses always 0 for new board
+        #  consecutivePasses always 0 for new board
         self.consecutivePasses = 0
 
         # create empty sgf_game on default
